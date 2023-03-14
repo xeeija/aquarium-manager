@@ -11,7 +11,7 @@ public static class Logger
 
   public static ILogger ContextLog<T>() where T : class
   {
-    if (_Logger == null)
+    while (_Logger == null)
     {
       InitLogger();
     }
@@ -38,15 +38,15 @@ public static class Logger
       });
 
       var configuration = new ConfigurationBuilder()
-   .SetBasePath(folder)
-   .AddJsonFile("appsettings.json")
-   .AddJsonFile("appsettings.Development.json", true)
-   .Build();
+        .SetBasePath(folder)
+        .AddJsonFile("appsettings.json")
+        .AddJsonFile("appsettings.Development.json", true)
+        .Build();
 
       Log.Logger = new LoggerConfiguration()
-          .ReadFrom
-          .Configuration(configuration)
-          .CreateLogger();
+        .ReadFrom
+        .Configuration(configuration)
+        .CreateLogger();
 
       _Logger = Log.Logger;
       Log.Verbose("Logger initialized in Folder " + folder);
