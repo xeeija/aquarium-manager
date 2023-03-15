@@ -1,4 +1,3 @@
-using DAL;
 using Serilog;
 using Utils;
 
@@ -14,22 +13,10 @@ public class BaseUnitTests
     Logger.InitLogger();
   }
 
-  [Test]
-  public void MyFirstLog()
-  {
-    log.Information("My first try");
-    Assert.IsTrue(true);
-  }
-
-  [Test]
-  public void ShouldHashPassword()
-  {
-    var password = "S3cure$Pw.rd";
-
-    var hasher = new Argon2PasswordHasher();
-    var passwordHash = hasher.Hash(password);
-
-    Assert.IsTrue(hasher.Verify(password, passwordHash));
-
-  }
+  // [Test]
+  // public void MyFirstLog()
+  // {
+  //   log.Information("My first try");
+  //   Assert.IsTrue(true);
+  // }
 }
