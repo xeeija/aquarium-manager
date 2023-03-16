@@ -1,5 +1,5 @@
 version: '3.4'
-
+name: aquarium-manager
 services:
   mongo:
     container_name: mongo-dev
@@ -8,19 +8,19 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_DATABASE=auth
       - MONGO_INITDB_ROOT_PASSWORD=pass
-    networks: 
+    networks:
       - mongo-compose-network
     ports:
       - '27017:27017'
-    volumes: 
+    volumes:
       - ./MongoData:/data/db
-  
+
   mongo-express:
     container_name: mongo-express
     image: mongo-express
     depends_on:
       - mongo
-    networks: 
+    networks:
       - mongo-compose-network
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongo-dev
@@ -30,14 +30,14 @@ services:
       - ME_CONFIG_BASICAUTH_PASSWORD=pass
     ports:
       - '8081:8081'
-    volumes: 
-      - ./MongoData:/data/db      
+    volumes:
+      - ./MongoData:/data/db
   influxdb:
     image: influxdb:latest
     volumes:
       # Mount for influxdb data directory and configuration
       - ./InfluxData:/var/lib/influxdb2:rw
-    networks: 
+    networks:
       - mongo-compose-network
     ports:
       - "8086:8086"
@@ -45,19 +45,19 @@ services:
     image: grafana/grafana-oss:latest
     ports:
       - "3002:3000"
-    networks: 
+    networks:
       - mongo-compose-network
   datasimulation:
     image: thomasschirgi/datasimulation:latest
     container_name: datasimulation2023
-    networks: 
+    networks:
       - mongo-compose-network
     ports:
-     - "4999:80"
-     - "502:502"
-     - "1883:1883"
+      - "4999:80"
+      - "502:502"
+      - "18830:18830"
     volumes:
-     - "./SimulationSettings:/app/SimulationSettings"
+      - "./SimulationSettings:/app/SimulationSettings"
 networks:
   mongo-compose-network:
     driver: bridge

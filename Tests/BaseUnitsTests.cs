@@ -8,7 +8,7 @@ public class BaseUnitTests
   protected ILogger log = Logger.ContextLog<BaseUnitTests>();
 
   [OneTimeSetUp]
-  public async Task Setup()
+  public virtual async Task Setup()
   {
     Logger.InitLogger();
   }

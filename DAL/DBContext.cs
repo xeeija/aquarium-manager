@@ -14,7 +14,7 @@ public class DBContext
   MongoClient Client;
   public bool IsConnected
   {
-    get { return DataBase != null; }
+    get => DataBase != null;
   }
 
   public DBContext()

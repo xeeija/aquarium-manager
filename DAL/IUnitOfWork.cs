@@ -1,6 +1,11 @@
+using DAL.Entities;
+using DAL.Repository;
+
 namespace DAL;
 
 public interface IUnitOfWork
 {
-  DBContext Context { get; }
+  public DBContext Context { get; }
+
+  public IRepository<Aquarium> Aquarium { get; }
 }
