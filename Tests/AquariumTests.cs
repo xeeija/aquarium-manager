@@ -1,18 +1,12 @@
-using DAL;
 using DAL.Entities;
 
 namespace Tests;
 
-public class AquariumTests : BaseUnitTests
+public class AquariumTests : BaseUnitOfWorkTests
 {
-  private UnitOfWork unit;
 
   private List<Aquarium> createdAquariums = new List<Aquarium>();
 
-  public AquariumTests()
-  {
-    unit = new UnitOfWork();
-  }
 
   [Test]
   public async Task ShouldCreateAquarium()
@@ -35,6 +29,15 @@ public class AquariumTests : BaseUnitTests
     Assert.NotNull(createdAquarium.ID);
   }
 
+  public async Task ShouldGetAquariumByName()
+  {
+    var aquarium = await unit.Aquarium.GetByName("Create Aquarium");
+
+    Assert.NotNull(aquarium.ID);
+    Assert.AreEqual(aquarium.Name, "Create Aquarium");
+    Assert.AreEqual(aquarium.Length, 500, Double.Epsilon);
+    Assert.AreEqual(aquarium.WaterType, WaterType.SaltWater);
+  }
 
   [Test]
   public async Task ShouldUpdateAquarium()
@@ -80,6 +83,6 @@ public class AquariumTests : BaseUnitTests
       "Update Aquarium",
     };
 
-    await unit.Aquarium.DeleteManyAsync(doc => namesToDelete.Contains(doc.Name));
+    await unit.Aquarium.DeleteManyAsync(aqauarium => namesToDelete.Contains(aqauarium.Name));
   }
 }
