@@ -7,5 +7,9 @@ public interface IUnitOfWork
 {
   public DBContext Context { get; }
 
-  public IRepository<Aquarium> Aquarium { get; }
+  public IAquarumRepository Aquarium { get; }
+
+  public IAquariumItemRepository AquariumItem { get; }
+
+  public IUserRepository User { get; }
 }

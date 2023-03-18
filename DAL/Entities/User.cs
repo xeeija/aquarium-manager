@@ -9,11 +9,13 @@ public class User : Entity
   public string LastName { get; set; }
   public string FullName { get => $"{FirstName} ${LastName}"; }
 
+  public string Username { get; set; }
+
   [JsonIgnore]
   [BsonIgnore]
-  public int Password { get; set; }
+  public string Password { get; set; }
   [JsonIgnore]
-  public int HashedPassword { get; set; }
+  public string HashedPassword { get; set; }
 
   public bool IsActive { get; set; }
 }
