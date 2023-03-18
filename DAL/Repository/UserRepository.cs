@@ -15,6 +15,7 @@ public class UserRepository : Repository<User>, IUserRepository
   {
     var user = await FindOneAsync(
       (user) => user.Username == username
+      && user.IsActive == true
       // && passwordHasher.Verify(password, user.HashedPassword)
     );
     // return user;
@@ -31,6 +32,8 @@ public class UserRepository : Repository<User>, IUserRepository
     user.HashedPassword = passwordHasher.Hash(user.Password);
 
     await InsertOneAsync(user);
+    user.Password = null;
+
     return user;
   }
 }

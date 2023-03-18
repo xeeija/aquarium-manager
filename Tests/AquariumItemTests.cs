@@ -43,7 +43,7 @@ public class AquariumItemTests : BaseUnitOfWorkTests
 
   }
 
-  [TearDown]
+  [OneTimeTearDown]
   public async Task Teardown()
   {
     await unit.AquariumItem.DeleteManyAsync(item => item.Description == "test item");
