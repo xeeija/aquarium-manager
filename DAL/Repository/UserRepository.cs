@@ -25,4 +25,12 @@ public class UserRepository : Repository<User>, IUserRepository
     }
     return null;
   }
+
+  public async Task<User> Register(User user)
+  {
+    user.HashedPassword = passwordHasher.Hash(user.Password);
+
+    await InsertOneAsync(user);
+    return user;
+  }
 }

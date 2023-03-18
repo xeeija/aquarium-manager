@@ -10,16 +10,13 @@ public class UserTests : BaseUnitOfWorkTests
   public async Task ShouldLoginUser()
   {
 
-    // TODO: Rreplace with a "register test"
-    var hasher = new DAL.Argon2PasswordHasher();
-
-    var user = await unit.User.InsertOneAsync(new User()
+    var user = await unit.User.Register(new User()
     {
       FirstName = "Alice",
       LastName = "Lidell",
       Username = "alicebatman",
+      Password = "5ecur3P.ssWD",
       IsActive = true,
-      HashedPassword = hasher.Hash("5ecur3P.ssWD"),
     });
 
     var loggedInUser = await unit.User.Login("alicebatman", "5ecur3P.ssWD");
