@@ -13,10 +13,4 @@ public class BaseUnitTests
     Logger.InitLogger();
   }
 
-  // [Test]
-  // public void MyFirstLog()
-  // {
-  //   log.Information("My first try");
-  //   Assert.IsTrue(true);
-  // }
 }

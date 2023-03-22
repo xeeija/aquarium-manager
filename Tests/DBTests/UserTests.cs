@@ -1,6 +1,6 @@
 using DAL.Entities;
 
-namespace Tests;
+namespace Tests.DBTests;
 
 public class UserTests : BaseUnitOfWorkTests
 {
@@ -12,6 +12,7 @@ public class UserTests : BaseUnitOfWorkTests
       FirstName = "Alice",
       LastName = "Lidell",
       Username = "alicebatman",
+      Email = "alice@batman.com",
       Password = "5ecur3P.ssWD",
       IsActive = true,
     });

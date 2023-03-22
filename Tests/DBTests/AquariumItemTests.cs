@@ -1,6 +1,6 @@
 using DAL.Entities;
 
-namespace Tests;
+namespace Tests.DBTests;
 
 public class AquariumItemTests : BaseUnitOfWorkTests
 {

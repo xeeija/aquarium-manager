@@ -1,6 +1,6 @@
 using DAL;
 
-namespace Tests;
+namespace Tests.DBTests;
 
 public class DBConnectionTest : BaseUnitTests
 {
