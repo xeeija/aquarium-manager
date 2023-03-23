@@ -5,7 +5,7 @@ using DAL;
 using DAL.Entities;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Services.Authentication;
+namespace Services.Auth;
 
 public class Authentication
 {
@@ -16,10 +16,10 @@ public class Authentication
     this.unit = unit;
   }
 
-  const string mySecret = "8hHk=ad9d/hD3j9dAW983)7dhKhdBh8&2a1!)jD/aA^d";
-  const string myIssuer = "http://schischoissuer.com";
-  const string myAudience = "http://schischoaudience.com";
-  SymmetricSecurityKey mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret));
+  const string secret = "8hHk=ad9d/hD3j9dAW983)7dhKhdBh8&2a1!)jD/aA^d";
+  const string issuer = "http://aquariumissuer.com";
+  const string audience = "http://aquariumaudience.com";
+  SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
 
   public async Task<AuthenticationInformation> Authenticate(User user)
   {
@@ -41,9 +41,9 @@ public class Authentication
           new Claim(ClaimTypes.Email, user.Email),
         }),
         Expires = expires,
-        Issuer = myIssuer,
-        Audience = myAudience,
-        SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
+        Issuer = issuer,
+        Audience = audience,
+        SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
       };
 
       var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -80,9 +80,9 @@ public class Authentication
         ValidateIssuerSigningKey = true,
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidIssuer = myIssuer,
-        ValidAudience = myAudience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret))
+        ValidIssuer = issuer,
+        ValidAudience = audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret))
       };
     }
   }

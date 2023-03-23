@@ -1,4 +1,4 @@
-﻿namespace Services.Authentication;
+﻿namespace Services.Auth;
 
 public class AuthenticationInformation
 {

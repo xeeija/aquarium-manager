@@ -1,8 +1,8 @@
 using DAL.Entities;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
-using Services.Authentication;
-using Services.Models;
+using Services;
+using Services.Auth;
 
 namespace Tests.ServiceTests;
 
@@ -122,6 +122,37 @@ public class UserServiceTests : BaseUnitOfWorkTests
 
     Assert.NotNull(authInfo);
     Assert.IsNotEmpty(authInfo.Token);
+
+  }
+
+  [Test]
+  public async Task ShouldLoginAndAuthenticateUser()
+  {
+    var modelState = new Mock<ModelStateDictionary>();
+    await userService.SetModelState(modelState.Object);
+
+    var user = await unit.User.Register(new User()
+    {
+      FirstName = "Peggy",
+      LastName = "Black",
+      Username = "peggy",
+      Email = "peggy@black.com",
+      Password = "S3c.rePwd",
+      IsActive = true,
+    });
+
+
+    var loginResponse = await userService.Login(new()
+    {
+      Username = "peggy", //"authelia",
+      Password = "S3c.rePwd",
+    });
+
+    Assert.NotNull(loginResponse);
+    Assert.False(loginResponse.HasError);
+
+    Assert.NotNull(loginResponse.Data?.AuthInfo);
+    Assert.IsNotEmpty(loginResponse.Data?.AuthInfo.Token);
 
   }
 

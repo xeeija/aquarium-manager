@@ -92,9 +92,10 @@ public abstract class Service<TEntity> where TEntity : Entity
     // TODO: ?
     if (!updatedEntity.HasError)
     {
-      updatedEntity.Data.ID = id; // ?
-                                  // await this.repository.UpdateOneAsync(entity);
-                                  // updatedEntity.HasError = false;
+      // what? why?
+      updatedEntity.Data.ID = id;
+      // await this.repository.UpdateOneAsync(entity);
+      // updatedEntity.HasError = false;
       return updatedEntity;
     }
 

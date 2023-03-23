@@ -1,5 +1,5 @@
 using DAL.Entities;
-using Services.Authentication;
+using Services.Auth;
 
 namespace Services.Models.Response;
 
