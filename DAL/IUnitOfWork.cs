@@ -12,4 +12,6 @@ public interface IUnitOfWork
   public IAquariumItemRepository AquariumItem { get; }
 
   public IUserRepository User { get; }
+
+  public IRepository<UserAquarium> UserAquarium { get; }
 }

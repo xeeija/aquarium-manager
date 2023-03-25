@@ -35,7 +35,7 @@ public class AquariumItemTests : BaseUnitOfWorkTests
       })
     );
 
-    var animals = unit.AquariumItem.GetAnimals();
+    var animals = unit.AquariumItem.GetAnimals().Where(animal => animal.Description == "test item").ToList();
     animals.Sort((a, b) => a.Name.CompareTo(b.Name));
 
     Assert.AreEqual(animals.Count, 2);

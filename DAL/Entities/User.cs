@@ -7,7 +7,7 @@ public class User : Entity
 {
   public string FirstName { get; set; }
   public string LastName { get; set; }
-  public string FullName { get => $"{FirstName} {LastName}"; }
+  public string FullName => $"{FirstName} {LastName}";
 
   public string Email { get; set; }
 

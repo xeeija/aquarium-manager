@@ -14,6 +14,8 @@ public class UnitOfWork : IUnitOfWork
 
   public IUserRepository User => new UserRepository(Context);
 
+  public IRepository<UserAquarium> UserAquarium => new Repository<UserAquarium>(Context);
+
   public UnitOfWork()
   {
     Context = new DBContext();
