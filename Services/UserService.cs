@@ -7,7 +7,7 @@ using Services.Models.Response;
 
 namespace Services;
 
-public class UserService : Service<User>
+public class UserService : CrudService<User>
 {
   // protected new IUserRepository repository;
 
@@ -17,26 +17,6 @@ public class UserService : Service<User>
   // }
 
   public UserService(UnitOfWork unit, IRepository<User> repository, GlobalService service) : base(unit, repository, service) { }
-
-  public override async Task<ItemResponseModel<User>> Create(User entity)
-  {
-    var response = new ItemResponseModel<User>()
-    {
-      Data = await repository.InsertOneAsync(entity),
-      // HasError = false,
-    };
-    return response;
-  }
-
-  public override async Task<ItemResponseModel<User>> Update(string id, User entity)
-  {
-    var response = new ItemResponseModel<User>()
-    {
-      Data = await repository.UpdateOneAsync(entity),
-      // HasError = false,
-    };
-    return response;
-  }
 
   public async Task<ItemResponseModel<UserResponse>> Login(LoginRequest request)
   {
