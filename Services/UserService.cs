@@ -64,7 +64,7 @@ public class UserService : CrudService<User>
     }
     else
     {
-      var userEmailExists = await this.repository.FindOneAsync(user => user.Email == entity.Email && entity.ID != user.ID);
+      var userEmailExists = await repository.FindOneAsync(user => user.Email == entity.Email && entity.ID != user.ID);
       if (userEmailExists != null)
       {
         modelStateWrapper.AddError("Email exists", "This email is already taken");

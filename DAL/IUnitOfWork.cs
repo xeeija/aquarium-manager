@@ -14,4 +14,6 @@ public interface IUnitOfWork
   public IUserRepository User { get; }
 
   public IRepository<UserAquarium> UserAquarium { get; }
+
+  public IRepository<Picture> Picture { get; }
 }
