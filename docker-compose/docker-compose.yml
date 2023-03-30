@@ -4,6 +4,12 @@ services:
   mongo:
     container_name: mongo-dev
     image: mongo:latest
+    healthcheck:
+      test: "echo 'db.stats().ok' | mongosh localhost:27017/admin --quiet -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_DATABASE=auth
@@ -18,8 +24,10 @@ services:
   mongo-express:
     container_name: mongo-express
     image: mongo-express
+    restart: on-failure
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     networks:
       - mongo-compose-network
     environment:
