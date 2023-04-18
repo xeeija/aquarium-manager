@@ -5,9 +5,9 @@ using Services.Models.Response;
 
 namespace Services;
 
-public class CoralService : AquariumItemService
+public class CoralService : AquariumItemService<Coral>
 {
-  public CoralService(UnitOfWork unit, IRepository<AquariumItem> repository, GlobalService service) : base(unit, repository, service)
+  public CoralService(UnitOfWork unit, IRepository<AquariumItem> repository, GlobalService service) : base(unit, (IRepository<Coral>)repository, service)
   {
   }
 

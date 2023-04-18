@@ -116,7 +116,7 @@ public abstract class Service<TEntity> where TEntity : Entity
   public async Task SetModelState(ModelStateDictionary validate)
   {
     modelStateWrapper = new ModelStateWrapper(validate);
-    this.validation = validate;
+    validation = validate;
   }
 
 }

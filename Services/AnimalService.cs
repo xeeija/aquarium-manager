@@ -5,9 +5,9 @@ using Services.Models.Response;
 
 namespace Services;
 
-public class AnimalService : AquariumItemService
+public class AnimalService : AquariumItemService<Animal>
 {
-  public AnimalService(UnitOfWork unit, IRepository<AquariumItem> repository, GlobalService service) : base(unit, repository, service)
+  public AnimalService(UnitOfWork unit, IRepository<AquariumItem> repository, GlobalService service) : base(unit, (IRepository<Animal>)repository, service)
   {
   }
 

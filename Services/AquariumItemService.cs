@@ -5,18 +5,18 @@ using Services.Models.Response;
 
 namespace Services;
 
-public class AquariumItemService : CrudService<AquariumItem>
+public class AquariumItemService<TItem> : CrudService<TItem> where TItem : AquariumItem
 {
-  public AquariumItemService(UnitOfWork unit, IRepository<AquariumItem> repository, GlobalService service) : base(unit, repository, service)
+  public AquariumItemService(UnitOfWork unit, IRepository<TItem> repository, GlobalService service) : base(unit, repository, service)
   {
   }
 
-  public Task<ItemResponseModel<AquariumItem>> AddAquariumItem(AquariumItem item)
+  public Task<ItemResponseModel<TItem>> AddAquariumItem(TItem item)
   {
     return CreateHandler(item);
   }
 
-  public override async Task<bool> Validate(AquariumItem item)
+  public override async Task<bool> Validate(TItem item)
   {
     if (item == null)
     {
