@@ -7,11 +7,11 @@ namespace Tests.ServiceTests;
 
 public class AquariumItemServiceTests : BaseUnitOfWorkTests
 {
-  private AquariumItemService aquariumItemService;
+  private AquariumItemService<AquariumItem> aquariumItemService;
 
   public AquariumItemServiceTests() : base()
   {
-    aquariumItemService = new AquariumItemService(unit, unit.AquariumItem, null);
+    aquariumItemService = new AquariumItemService<AquariumItem>(unit, unit.AquariumItem, null);
   }
 
   [Test]

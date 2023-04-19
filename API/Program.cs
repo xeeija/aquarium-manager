@@ -1,5 +1,7 @@
+using System.Text.Json.Serialization;
 using DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Newtonsoft.Json.Converters;
 using Services;
 using Services.Auth;
 
@@ -14,6 +16,25 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddHealthChecks();
+
+builder.Services
+  .AddControllersWithViews()
+  .AddNewtonsoftJson()
+  .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+builder.Services
+  .AddControllersWithViews()
+  .AddNewtonsoftJson(options => options.SerializerSettings.Converters.Add(new StringEnumConverter()));
+
+builder.Services.AddCors(options =>
+{
+  options.AddPolicy("Cors", corsBuilder =>
+    corsBuilder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader()
+  );
+});
+
 builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApiDocument(doc =>
 {
@@ -33,6 +54,10 @@ builder.Services
   .AddJwtBearer(options => options.TokenValidationParameters = Authentication.ValidationParams);
 
 var app = builder.Build();
+
+app.UseCors("Cors");
+
+app.MapHealthChecks("health");
 
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())

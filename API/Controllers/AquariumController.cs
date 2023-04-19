@@ -26,6 +26,8 @@ public class AquariumController : BaseController<Aquarium>
   }
 
   [HttpPost]
+  [ProducesResponseType(StatusCodes.Status201Created)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<ActionResult<ItemResponseModel<Aquarium>>> Create([FromBody] Aquarium aquarium)
   {
     // TODO: Id is required in the endpoint, but not used

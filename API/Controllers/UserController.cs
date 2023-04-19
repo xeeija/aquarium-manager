@@ -15,7 +15,7 @@ public class UserController : BaseController<User>
     UserService = service.UserService;
   }
 
-  [HttpPost]
+  [HttpPost("login")]
   public async Task<ActionResult<ItemResponseModel<UserResponse>>> Login([FromBody] LoginRequest request)
   {
     return await UserService.Login(request);
