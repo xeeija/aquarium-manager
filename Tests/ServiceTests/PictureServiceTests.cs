@@ -53,6 +53,29 @@ public class PictureServiceTests : BaseUnitOfWorkTests
 
   }
 
+  // [Test]
+  // [Order(10)]
+  // public async Task ShouldGetPicturesForAquarium()
+  // {
+  //   // var aquarium = unit.Aquarium.FindOneAsync(a => a.Name == "picture service test 1");
+  //   // Assert.NotNull(aquarium);
+
+  //   // TODO: 
+  //   // - add second aquarium with at least one picture
+  //   // - GetPictures for the first aquarium
+  //   // - assert that pictures dont include the ones from the second aquarium
+  // }
+
+  // [Test]
+  // [Order(20)]
+  // public async Task ShouldDeletePicture()
+  // {
+  //   // TODO:
+  //   // delete picture from upload picture test
+  //   // assert that picture is deleted
+  //   // assert that referenced pictureID is deleted from GridFS
+  // }
+
   [OneTimeTearDown]
   public async Task Teardown()
   {
