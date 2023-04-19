@@ -1,6 +1,6 @@
-# Aquarium Management
+# Data API
 
-Management of Aquariums, Users, Pictures, etc.
+Management and storage of aquarium measurements
 
 ## Dotnet Usage 
 
@@ -20,5 +20,5 @@ dotnet add package <name>
 dotnet add reference path/to/project.csproj path/to/reference.csproj
 
 # manage solution file, add/remove projects
-dotnet sln add Aquarium.sln path/to/project.csproj
+dotnet sln add AquariumData.sln path/to/project.csproj
 ```

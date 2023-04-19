@@ -1,0 +1,142 @@
+[
+	{
+		"Name": "Pumpe",
+		"PublishInterval": 2,
+		"Options": {
+			"Modbus": {
+				"$type": "DataSimulator.Simulation.Modbus.ModbusDeviceOptions, DataSimulator",
+				"Port": 502,
+				"SlaveID": 1
+			}
+		},
+		"DataPoints": [
+			{
+				"Name": "Pump Current",
+				"DataType": "Float",
+				"SimulationType": "Sine",
+				"RangeMin": 3.0,
+				"RangeMax": 5.0,
+				"RelativeOffset": 1,
+				"Writeable": false,
+				"Value": null,
+				"Options": {
+					"Modbus": {
+						"$type": "DataSimulator.Simulation.Modbus.ModbusDatapointOptions, DataSimulator",
+						"RegisterNumber": 1,
+						"RegisterType": "HighToLow"
+					}
+				}
+			},
+			{
+				"Name": "Pump Current",
+				"DataType": "Float",
+				"SimulationType": "Static",
+				"RangeMin": 24.0,
+				"RangeMax": 24.0,
+				"RelativeOffset": 1,
+				"Writeable": false,
+				"Value": 24,
+				"Options": {
+					"Modbus": {
+						"$type": "DataSimulator.Simulation.Modbus.ModbusDatapointOptions, DataSimulator",
+						"RegisterNumber": 3,
+						"RegisterType": "HighToLow"
+					}
+				}
+			},
+			{
+				"Name": "Pump Status",
+				"DataType": "Boolean",
+				"SimulationType": "Static",
+				"RangeMin": 1,
+				"RangeMax": 1,
+				"RelativeOffset": 1,
+				"Writeable": false,
+				"Value": 1,
+				"Options": {
+					"Modbus": {
+						"$type": "DataSimulator.Simulation.Modbus.ModbusDatapointOptions, DataSimulator",
+						"RegisterNumber": 1,
+						"RegisterType": "HighToLow"
+					}
+				}
+			}
+		]
+	},
+	{
+		"Name": "Wasserwerte",
+		"PublishInterval": 2,
+		"Options": {
+			"MQTT": {
+				"$type": "DataSimulator.Simulation.MQTT.MQTTDeviceOptions, DataSimulator",
+				"Port": 1883
+			}
+		},
+		"DataPoints": [
+			{
+				"Name": "WaterTemp",
+				"DataType": "Float",
+				"SimulationType": "Sine",
+				"RangeMin": 24.0,
+				"RangeMax": 27.0,
+				"RelativeOffset": 1,
+				"Writeable": false,
+				"Value": null,
+				"Options": {
+					"MQTT": {
+						"$type": "DataSimulator.Simulation.MQTT.MQTTDeviceDatapointOptions, DataSimulator",
+						"TopicName": "WaterTemp"
+					}
+				}
+			},
+			{
+				"Name": "Calcium",
+				"DataType": "Float",
+				"SimulationType": "Sine",
+				"RangeMin": 425.0,
+				"RangeMax": 500.0,
+				"RelativeOffset": 1,
+				"Writeable": false,
+				"Value": null,
+				"Options": {
+					"MQTT": {
+						"$type": "DataSimulator.Simulation.MQTT.MQTTDeviceDatapointOptions, DataSimulator",
+						"TopicName": "Calcium"
+					}
+				}
+			},
+			{
+				"Name": "Magnesium",
+				"DataType": "Float",
+				"SimulationType": "Sine",
+				"RangeMin": 1250.0,
+				"RangeMax": 1500.0,
+				"RelativeOffset": 1,
+				"Writeable": false,
+				"Value": null,
+				"Options": {
+					"MQTT": {
+						"$type": "DataSimulator.Simulation.MQTT.MQTTDeviceDatapointOptions, DataSimulator",
+						"TopicName": "Magnesium"
+					}
+				}
+			},
+			{
+				"Name": "Alkalinity",
+				"DataType": "Float",
+				"SimulationType": "Sine",
+				"RangeMin": 7,
+				"RangeMax": 9,
+				"RelativeOffset": 1,
+				"Writeable": false,
+				"Value": null,
+				"Options": {
+					"MQTT": {
+						"$type": "DataSimulator.Simulation.MQTT.MQTTDeviceDatapointOptions, DataSimulator",
+						"TopicName": "Alkalinity"
+					}
+				}
+			}
+		]
+	}
+]

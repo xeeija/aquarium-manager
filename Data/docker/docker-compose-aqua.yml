@@ -1,0 +1,86 @@
+version: '3.4'
+
+services:
+  mongo:
+    container_name: mongo-dev
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_DATABASE=auth
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    networks: 
+       mongo-compose-network:
+            ipv4_address: 10.5.0.2
+    ports:
+      - '27017:27017'
+    volumes: 
+      - ./MongoData:/data/db
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    depends_on:
+      - mongo
+    networks: 
+      mongo-compose-network:
+            ipv4_address: 10.5.0.3
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo-dev
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
+    ports:
+      - '8081:8081'
+    volumes: 
+      - ./MongoData:/data/db      
+  influxdb:
+    image: influxdb:latest
+    volumes:
+      # Mount for influxdb data directory and configuration
+      - ./InfluxData:/var/lib/influxdb2:rw
+    networks: 
+      mongo-compose-network:
+            ipv4_address: 10.5.0.4
+    ports:
+      - "8086:8086"
+  datasimulation:
+    image: thomasschirgi/datasimulation:latest
+    container_name: datasimulation2023
+    networks: 
+      mongo-compose-network:
+            ipv4_address: 10.5.0.5        
+    ports:
+     - "4999:80"
+     - "502:502"
+     - "1883:1883"
+    volumes:
+     - "./SimulationSettings:/app/SimulationSettings"
+  aquariummanagement:
+    container_name: aquarium_api
+    image: thomasschirgi/aquariummanagementapi:latest
+    volumes:
+      # Mount for influxdb data directory and configuration
+        - "./Settings:/app/Settings"
+    networks: 
+      mongo-compose-network:
+            ipv4_address: 10.5.0.6
+    ports:
+      - "5000:5000"
+  aquariumdataapi:
+    container_name: aquariumdataapi
+    image: thomasschirgi/aquariumdataapi:latest
+    volumes:
+      # Mount for influxdb data directory and configuration
+        - "./DataSettings:/app/DataSettings"
+    networks: 
+      mongo-compose-network:
+            ipv4_address: 10.5.0.7
+    ports:
+      - "5001:5001"
+networks:
+  mongo-compose-network:
+    driver: bridge
+    ipam:
+      config:
+          - subnet: 10.5.0.0/16
+            gateway: 10.5.0.1
