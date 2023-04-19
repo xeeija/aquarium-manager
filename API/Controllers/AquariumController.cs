@@ -1,4 +1,5 @@
 using DAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Models.Request;
@@ -6,7 +7,9 @@ using Services.Models.Response;
 
 namespace API.Controllers;
 
-// [Authorize]
+[Authorize]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 public class AquariumController : BaseController<Aquarium>
 {
   AquariumService AquariumService { get; set; }

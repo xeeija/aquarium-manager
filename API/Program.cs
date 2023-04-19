@@ -1,5 +1,7 @@
 using DAL;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Services;
+using Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,11 +22,15 @@ builder.Services.AddOpenApiDocument(doc =>
   doc.AddSecurity("JWT", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme()
   {
     Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
-    Name = "Authorizattion",
+    Name = "Authorization",
     In = NSwag.OpenApiSecurityApiKeyLocation.Header,
-    Description = "Enter token below: Bearer ey1234567890abcdef",
+    Description = "Enter token below: Bearer ey1234567890abcdef...",
   });
 });
+
+builder.Services
+  .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+  .AddJwtBearer(options => options.TokenValidationParameters = Authentication.ValidationParams);
 
 var app = builder.Build();
 
@@ -35,6 +41,7 @@ app.UseSwaggerUi3();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
