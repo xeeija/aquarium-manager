@@ -1,14 +1,14 @@
-﻿using DAL.MongoDB.Repository.Impl;
+﻿using DAL.MongoDB.Repository;
 
 namespace DAL.MongoDB.UnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        DBContext Context { get; }
+  public interface IUnitOfWork
+  {
+    DBContext Context { get; }
 
-        IDataPointRepository DataPoints { get; }
+    IDataPointRepository DataPoints { get; }
 
-        IDeviceRepository Devices { get; }
+    // IDeviceRepository Devices { get; }
 
-    }
+  }
 }
