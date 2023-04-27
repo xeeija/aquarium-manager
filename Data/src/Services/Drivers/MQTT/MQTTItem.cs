@@ -1,9 +1,8 @@
-﻿namespace Services.Drivers
+﻿namespace Services.Drivers;
+
+public class MQTTItem
 {
-    public class MQTTItem
-    {
-        public String Name { get; set; }
-        public Object Value { get; set; }
-        public long TimeStamp { get; set; }
-    }
+  public string Name { get; set; }
+  public object Value { get; set; }
+  public long Timestamp { get; set; }
 }

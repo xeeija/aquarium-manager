@@ -20,7 +20,6 @@ namespace Services.Drivers
       Name = name;
     }
 
-
     public bool IsConnected { get; protected set; }
 
     public abstract Task Connect();
@@ -46,7 +45,6 @@ namespace Services.Drivers
 
       Measurements[datapoint].Add(measurement);
     }
-
 
     public void AddDataPoint(string name, DataPoint point)
     {

@@ -63,7 +63,7 @@ services:
     ports:
       - "4999:80"
       - "502:502"
-      - "18830:18830"
+      - "1883:1883"
     volumes:
       - "./SimulationSettings:/app/SimulationSettings"
 networks:

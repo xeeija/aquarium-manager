@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using DAL.Influx;
 using DAL.MongoDB.Entities;
-using DAL.MongoDB.Entities.Devices;
 using DAL.MongoDB.UnitOfWork;
 using Serilog;
 using Services.Drivers;

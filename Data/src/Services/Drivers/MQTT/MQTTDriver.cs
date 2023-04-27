@@ -1,32 +1,33 @@
-﻿using DAL.MongoDB.Entities;
+﻿using DAL.Drivers;
+using DAL.Influx.Samples;
+using DAL.MongoDB.Entities;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Packets;
 using Newtonsoft.Json;
 
-namespace Services.Drivers
-{
-  /*
+namespace Services.Drivers;
+
 public class MQTTDriver : Driver
 {
   IManagedMqttClient Client;
 
+  string FinalUrl;
+  List<MQTTDataPoint> MQTTDataPoints = new();
   private MQTTDevice Source;
-  String FinalUrl;
-  List<MQTTDataPoint> MQTTDataPoints = new List<MQTTDataPoint>();
-  public MQTTDriver(MQTTDevice src, List<MQTTDataPoint> datapoints) : base(src.DeviceName)
+
+  public MQTTDriver(MQTTDevice src, List<MQTTDataPoint> datapoints) : base(src.Name)
   {
-    this.Source = src;
-    this.MQTTDataPoints = datapoints;
+    Source = src;
+    MQTTDataPoints = datapoints;
   }
 
   public async override Task Connect()
   {
     log.Information("Created Client - trying to connect to " + FinalUrl);
 
-
-    MqttFactory mqttFactory = new MqttFactory();
+    var mqttFactory = new MqttFactory();
     Client = mqttFactory.CreateManagedMqttClient();
 
     Client.ApplicationMessageReceivedAsync += Client_ApplicationMessageReceivedAsync;
@@ -34,37 +35,36 @@ public class MQTTDriver : Driver
     Client.DisconnectedAsync += Client_DisconnectedAsync;
 
     var mqttClientOptions = new MqttClientOptionsBuilder()
-       .WithTcpServer(Source.Host, Source.Port)
-       .WithClientId(Source.DeviceName)
-       .Build();
+      .WithTcpServer(Source.Host, Source.Port)
+      .WithClientId(Source.Name)
+      .Build();
 
-
-    List<MqttTopicFilter> topics = new List<MqttTopicFilter>();
-    foreach (MQTTDataPoint dpi in this.MQTTDataPoints)
+    List<MqttTopicFilter> topics = new();
+    foreach (MQTTDataPoint point in MQTTDataPoints)
     {
-      if (dpi.GetType() == typeof(MQTTDataPoint))
+      if (point.GetType() == typeof(MQTTDataPoint))
       {
-        MQTTDataPoint dp = (MQTTDataPoint)dpi;
-        MqttTopicFilter topicFilterAnalog = new MqttTopicFilter { Topic = dp.TopicName, QualityOfServiceLevel = MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce };
+        // MQTTDataPoint mqttPoint = (MQTTDataPoint)point;
+        var topicFilterAnalog = new MqttTopicFilter()
+        {
+          Topic = point.Topic,
+          QualityOfServiceLevel = MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce
+        };
 
-        log.Debug("Adding Topic " + dp.TopicName + " to subscription");
+        log.Debug("Adding Topic " + point.Topic + " to subscription");
         topics.Add(topicFilterAnalog);
 
-        AddDataPoint(dp.TopicName, dp);
+        AddDataPoint(point.Topic, point);
       }
     }
 
-
-    await this.Client.SubscribeAsync(topics.ToArray());
+    await Client.SubscribeAsync(topics.ToArray());
 
     var managedMqttClientOptions = new ManagedMqttClientOptionsBuilder()
-.WithClientOptions(mqttClientOptions)
-.Build();
+      .WithClientOptions(mqttClientOptions)
+      .Build();
 
     await Client.StartAsync(managedMqttClientOptions);
-
-
-
   }
 
   private Task Client_DisconnectedAsync(MqttClientDisconnectedEventArgs obj)
@@ -88,84 +88,79 @@ public class MQTTDriver : Driver
 
   private Task Client_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs obj)
   {
-    String message = obj.ApplicationMessage.ConvertPayloadToString();
+    string message = obj.ApplicationMessage.ConvertPayloadToString();
 
     log.Verbose("Topic " + obj.ApplicationMessage.Topic + " received " + message);
 
     try
     {
-      MQTTItem converted = JsonConvert.DeserializeObject<MQTTItem>(message);
+      var converted = JsonConvert.DeserializeObject<MQTTItem>(message);
 
       if (converted != null)
       {
+        MQTTDataPoint point = (MQTTDataPoint)GetDataPoint(obj.ApplicationMessage.Topic);
 
-        MQTTDataPoint dp = (MQTTDataPoint)GetDataPoint(obj.ApplicationMessage.Topic);
-
-        if (dp != null)
+        if (point != null)
         {
           Sample sample = null;
-          if (dp.DataType == DataType.Float)
+          if (point.DataType == DataType.Float)
           {
-            sample = new NumericSample();
-            float val = (float)(Convert.ToDouble(converted.Value) / dp.Offset);
-            sample.Value = dp;
+            // sample = new NumericSample();
+            // float val = (float)(Convert.ToDouble(converted.Value) / point.Offset);
+            // sample.Value = point;
+            sample = new NumericSample()
+            {
+              Value = Convert.ToSingle(Convert.ToDouble(converted.Value) / point.Offset),
+            };
           }
           else
           {
-            sample = new BinarySample();
-            sample.Value = converted.Value;
+            sample = new BinarySample()
+            {
+              Value = converted.Value
+            };
           }
 
           //https://www.epochconverter.com/
-
-          sample.TimeStamp = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(converted.TimeStamp);
-
-          sample.Tag = dp.Name;
+          sample.Timestamp = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(converted.Timestamp);
+          sample.Tag = point.Name;
 
           if (sample.GetType() == typeof(NumericSample))
           {
-            AddNumericMeasurement(dp.Name, sample as NumericSample);
+            AddNumericMeasurement(point.Name, sample as NumericSample);
           }
           else
           {
-            AddBinaryMeasurement(dp.Name, sample as BinarySample);
+            AddBinaryMeasurement(point.Name, sample as BinarySample);
           }
 
         }
       }
 
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      log.Fatal("Could not convert Payload to JSON Object");
+      log.Fatal("Could not convert Payload to JSON Object " + ex.Message);
     }
 
     return Task.CompletedTask;
   }
 
-
-
-
-
   public async override Task Disconnect()
   {
     try
     {
-
       log.Information("Stopping Client");
       if (Client != null)
       {
-        Client.StopAsync();
+        await Client.StopAsync();
         Client.Dispose();
       }
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      log.Warning("Stopping failed " + e.ToString());
+      log.Warning("Stopping failed " + ex.Message);
     }
   }
 
-
-}
-*/
 }
