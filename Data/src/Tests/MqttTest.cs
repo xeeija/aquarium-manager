@@ -17,23 +17,25 @@ public class MqttTest
       Active = true,
     };
 
-    var dataPoints = new List<MQTTDataPoint>() {
+    var dataPointsSubscribed = new List<MQTTDataPoint>() {
       new() {
-        Name = "Water",
+        Name = "WaterTemp",
         DataType = DataType.Float,
-        Topic = "",
+        Topic = "WaterTemp",
       }
     };
 
-    var driver = new MQTTDriver(mqttDevice, new());
+    var driver = new MQTTDriver(mqttDevice, dataPointsSubscribed);
 
     await driver.Connect();
 
     await Task.Delay(100);
     Assert.That(driver.IsConnected, Is.True);
 
-    // await driver.Read();
-    // Assert.That(driver.Measurements.Count, Is.GreaterThan(0));
+    await Task.Delay(4000);
+
+    Assert.That(driver.Measurements, Is.Not.Empty);
+    Assert.That(driver.Measurements["WaterTemp"], Is.Not.Empty);
 
     await driver.Disconnect();
   }
