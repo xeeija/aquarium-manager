@@ -28,6 +28,8 @@ public class MqttTest
     var driver = new MQTTDriver(mqttDevice, new());
 
     await driver.Connect();
+
+    await Task.Delay(100);
     Assert.That(driver.IsConnected, Is.True);
 
     // await driver.Read();
