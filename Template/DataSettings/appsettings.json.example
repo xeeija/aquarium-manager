@@ -1,0 +1,57 @@
+{
+  "MongoDbSettings": {
+    "DatabaseName": "AquariumData_WIP",
+    "Port": "27017",
+    "Password": "pass",
+    "Username": "admin",
+    "Server": "10.5.0.2"
+  },
+  "InfluxDbSettings": {
+    "Server": "10.5.0.4",
+    "Port": "8086",
+    "Organization": "ORG_ID",
+    "Token": "TOKEN"
+  },
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.File",
+      "Serilog.Sinks.Seq",
+      "Serilog.Enrichers.Environment"
+    ],
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "\\Logs\\log.log",
+          "rollingInterval": "Day"
+        }
+      },
+      {
+        "Name": "Seq",
+        "Args": {
+          "serverUrl": "http://10.5.0.14:5341"
+        }
+      }
+    ],
+    "Enrich": [
+      "FromLogContext",
+      "WithMachineName",
+      "WithThreadId"
+    ]
+  }
+}

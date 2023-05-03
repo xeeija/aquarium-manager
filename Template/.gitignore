@@ -1,0 +1,9 @@
+MongoData
+InfluxData
+Logs
+# seq/Documents
+# seq/Stream
+seq/*
+!seq/Seq.json.example
+DataSettings/appsettings.json
+mkcert/*.pem
