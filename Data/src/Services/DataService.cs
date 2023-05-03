@@ -1,122 +1,189 @@
-﻿using DAL.Drivers;
-using DAL.Influx;
-using DAL.MongoDB.Entities;
+﻿using DAL.MongoDB.Entities;
+using DAL.MongoDB.Repository;
 using DAL.MongoDB.UnitOfWork;
-using Services.Drivers;
+using InfluxDB.Client.Api.Domain;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Services.Response.Basis;
+using Services.Utils;
 using Utils;
 
-namespace Services;
-
-public class ServiceStart
+namespace Services
 {
-  protected Serilog.ILogger log = Logger.ContextLog<ServiceStart>();
-  IUnitOfWork Unit = null;
-  IInfluxUnitOfWork InfluxUnit = null;
-  Dictionary<string, List<Driver>> Drivers = new();
-  System.Timers.Timer timer = null;
-  public ServiceStart(IUnitOfWork unitOfWork, IInfluxUnitOfWork influxUnit)
+  public abstract class DataService<TEntity> where TEntity : Entity
   {
-    UnitOfWork = unitOfWork;
-    InfluxUnitOfWork = influxUnit;
+    protected Serilog.ILogger log = Logger.ContextLog<DataService<TEntity>>();
 
-  }
+    protected UnitOfWork UnitOfWork = null;
+    protected IRepository<TEntity> Repository = null;
+    protected ModelStateDictionary Validation = null;
+    protected GlobalService GlobalService;
 
-  public async Task Start()
-  {
-    log.Information("Starting");
-    timer = new System.Timers.Timer(10000)
+    protected IModelStateWrapper validationDictionary;
+    public abstract Task<bool> Validate(TEntity entry);
+
+    protected User CurrentUser { get; private set; }
+
+    protected abstract Task<ItemResponseModel<TEntity>> Create(TEntity entry);
+    public abstract Task<ItemResponseModel<TEntity>> Update(string id, TEntity entry);
+    public virtual async Task<ActionResultResponseModel> Delete(string id)
     {
-      Enabled = true
-    };
-    timer.Elapsed += Timer_Elapsed;
-    List<MQTTDevice> mqtdevices = UnitOfWork.Devices.GetMQTTDevices();
+      await Repository.DeleteByIdAsync(id);
 
-    foreach (MQTTDevice device in mqtdevices)
-    {
-      await InfluxUnitOfWork.Influx.CreateBucket(device.Aquarium);
-      List<DataPoint> dps = UnitOfWork.DataPoints.GetDataPointsForDevice(device.DeviceType);
-
-      List<MQTTDataPoint> datapoints = dps.Cast<MQTTDataPoint>().ToList();
-
-      MQTTDriver mqtt = new MQTTDriver(device, datapoints);
-
-
-      if (!Drivers.ContainsKey(device.Aquarium))
+      var model = new ActionResultResponseModel
       {
-        Drivers.Add(device.Aquarium, new List<Driver>());
-      }
-      Drivers[device.Aquarium].Add(mqtt);
+        Success = true
+      };
 
-      Task.Run(() => mqtt.Connect());
+      return model;
     }
 
-    List<ModbusDevice> moddevices = UnitOfWork.Devices.GetModbusDevices();
-
-
-    foreach (ModbusDevice device in moddevices)
+    public async Task SetModelState(ModelStateDictionary validation)
     {
-      await InfluxUnitOfWork.Influx.CreateBucket(device.Aquarium);
-      List<DataPoint> dps = UnitOfWork.DataPoints.GetDataPointsForDevice(device.DeviceType);
-
-      List<ModbusDataPoint> datapoints = dps.Cast<ModbusDataPoint>().ToList();
-
-      ModbusDriver modbus = new ModbusDriver(device, datapoints);
-
-      if (!Drivers.ContainsKey(device.Aquarium))
-      {
-        Drivers.Add(device.Aquarium, new List<Driver>());
-      }
-      Drivers[device.Aquarium].Add(modbus);
-
-      Task.Run(() => modbus.Connect());
+      validationDictionary = new ModelStateWrapper(validation);
+      Validation = validation;
     }
 
-    await Save();
-  }
-
-  private async void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
-  {
-    await Save();
-  }
-
-  private async Task Save()
-  {
-
-    foreach (KeyValuePair<String, List<Driver>> driver in Drivers)
+    public DataService(UnitOfWork unit, IRepository<TEntity> repo, GlobalService service)
     {
+      UnitOfWork = unit;
+      Repository = repo;
+      GlobalService = service;
+    }
 
-      ConcurrentBag<Sample> samples = new ConcurrentBag<Sample>();
-      foreach (Driver dr in driver.Value)
+    public void ClearValidation()
+    {
+      if (Validation != null)
       {
-        foreach (KeyValuePair<String, ConcurrentBag<Sample>> smp in dr.Measurements)
+        validationDictionary = new ModelStateWrapper(Validation);
+      }
+    }
+
+    public virtual async Task<ItemResponseModel<TEntity>> CreateHandler(TEntity entry)
+    {
+      ClearValidation();
+      var returnval = new ItemResponseModel<TEntity>();
+
+      try
+      {
+        if (await Validate(entry))
         {
-          samples.AddRange(smp.Value);
+
+          ItemResponseModel<TEntity> ent = await Create(entry);
+
+          if (ent != null)
+          {
+            if (ent.HasError == false)
+            {
+
+              returnval.Data = ent.Data;
+              returnval.HasError = false;
+            }
+            else
+            {
+              return ent;
+            }
+          }
+          else
+          {
+            returnval.Data = default;
+            returnval.HasError = true;
+            returnval.ErrorMessages.Add("Empty", "Object was empty");
+          }
+        }
+        else
+        {
+          returnval.Data = default;
+          returnval.HasError = true;
+          returnval.ErrorMessages = validationDictionary.Errors;
         }
       }
-      await InfluxUnitOfWork.Influx.InsertManyAsync(driver.Key, samples);
-
-      foreach (Driver dr in driver.Value)
+      catch (Exception ex)
       {
-        await dr.Clear();
+        returnval.Data = default;
+        returnval.HasError = true;
+        returnval.ErrorMessages.Add("Error", "Error during create of element");
+
+        log.Warning("Error during creation");
+        log.Debug(ex, "Error during creation");
       }
+      return returnval;
     }
 
-
-  }
-
-
-
-  public async Task Stop()
-  {
-    foreach (KeyValuePair<String, List<Driver>> driver in Drivers)
+    public virtual async Task<ItemResponseModel<TEntity>> UpdateHandler(String id, TEntity entry)
     {
-
-
-      foreach (Driver dr in driver.Value)
+      ClearValidation();
+      var returnval = new ItemResponseModel<TEntity>();
+      try
       {
-        await dr.Disconnect();
+        if (await Validate(entry))
+        {
+          try
+          {
+            ItemResponseModel<TEntity> ent = await Update(id, entry);
+            if (ent != null && ent.Data != null)
+            {
+              if (ent.HasError == false)
+              {
+                ent.Data.ID = id;
+                await Repository.UpdateOneAsync(ent.Data);
+                returnval.Data = ent.Data;
+                returnval.HasError = false;
+              }
+              else
+              {
+                return ent;
+              }
+            }
+            else
+            {
+              returnval.Data = default;
+              returnval.HasError = true;
+              returnval.ErrorMessages.Add("Empty", "Object was empty");
+            }
+          }
+
+          catch (Exception ex)
+          {
+            returnval.Data = default;
+            returnval.HasError = true;
+            returnval.ErrorMessages.Add("Error", "Error during create of element");
+
+            log.Warning("Error during creation");
+            log.Debug(ex, "Error during creation");
+          }
+        }
+        else
+        {
+          returnval.Data = default;
+          returnval.HasError = true;
+          returnval.ErrorMessages = validationDictionary.Errors;
+        }
       }
+      catch (Exception ex)
+      {
+        returnval.Data = default;
+        returnval.HasError = true;
+        returnval.ErrorMessages.Add("Error", "Error during create of element");
+
+        log.Warning("Error during creation");
+        log.Debug(ex, "Error during creation");
+      }
+
+      return returnval;
     }
 
+    public async Task<TEntity> Get(string id)
+    {
+      TEntity ent = await Repository.FindByIdAsync(id);
+
+      return ent;
+    }
+
+    public async Task<List<TEntity>> GetAll()
+    {
+      List<TEntity> ent = Repository.FilterBy(x => true);
+
+      return ent;
+    }
   }
 }
