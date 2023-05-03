@@ -119,7 +119,7 @@ namespace Services.Drivers
 
     private NumericSample DecodeNumeric(ushort[] register, ModbusDataPoint pt)
     {
-      NumericSample sample = new NumericSample();
+      var sample = new NumericSample();
 
       if (pt.DataType == DataType.Float)
       {

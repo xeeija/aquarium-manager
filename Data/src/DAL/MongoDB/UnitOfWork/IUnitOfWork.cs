@@ -8,7 +8,9 @@ namespace DAL.MongoDB.UnitOfWork
 
     IDataPointRepository DataPoints { get; }
 
-    // IDeviceRepository Devices { get; }
+    IDeviceRepository Devices { get; }
+
+    IVisualsRepository Visuals { get; }
 
   }
 }

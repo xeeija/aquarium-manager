@@ -73,7 +73,7 @@ public class InfluxRepository : IInfluxRepository
 
   private List<Sample> GetSamples(DataPoint dp, List<FluxTable> tables)
   {
-    List<Sample> returnval = new List<Sample>();
+    var returnval = new List<Sample>();
     if (dp.DataType == DataType.Boolean)
     {
       foreach (var record in tables.SelectMany(table => table.Records))

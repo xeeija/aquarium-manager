@@ -22,6 +22,6 @@ public class InfluxDBTests
       Timestamp = DateTime.Now,
     };
 
-    await unitInflux.Influx.InsertOneAsync("test", sample);
+    await unitInflux.Repository.InsertOneAsync("test", sample);
   }
 }

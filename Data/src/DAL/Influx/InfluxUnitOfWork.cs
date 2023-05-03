@@ -4,13 +4,15 @@ using Utils;
 
 namespace DAL.Influx;
 
-public class InfluxUnitOfWork
+public class InfluxUnitOfWork : IInfluxUnitOfWork
 {
+  private IInfluxRepository _repository = null;
+
   protected Serilog.ILogger log = Logger.ContextLog<InfluxUnitOfWork>();
 
   public InfluxDBContext Context { get; private set; } = null;
 
-  private IInfluxRepository Repository = null;
+  public IInfluxRepository Repository => _repository;
 
   public InfluxUnitOfWork()
   {
@@ -20,14 +22,7 @@ public class InfluxUnitOfWork
     var context = new InfluxDBContext(settings);
     Context = context;
 
-    Repository = new InfluxRepository(Context);
+    _repository = new InfluxRepository(Context);
   }
 
-  public IInfluxRepository Influx
-  {
-    get
-    {
-      return Repository;
-    }
-  }
 }

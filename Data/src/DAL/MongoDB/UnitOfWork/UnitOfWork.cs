@@ -7,20 +7,13 @@ namespace DAL.MongoDB.UnitOfWork
     public DBContext Context { get; private set; } = null;
     public UnitOfWork()
     {
-      DBContext context = new DBContext();
-      Context = context;
+      Context = new DBContext();
     }
 
     public IDataPointRepository DataPoints => new DataPointRepository(Context);
 
-    // public IDeviceRepository Devices
-    // {
-    //     get
-    //     {
-    //         return new DeviceRepository(Context);
-    //     }
-    // }
+    public IDeviceRepository Devices => new DeviceRepository(Context);
 
-
+    public IVisualsRepository Visuals => new VisualsRepository(Context);
   }
 }
