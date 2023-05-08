@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "Aquarium2023",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}

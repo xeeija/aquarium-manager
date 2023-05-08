@@ -1,0 +1,8 @@
+{
+  "name": "Aquarium2023",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react",
+  "id": "ebbd6241"
+}
