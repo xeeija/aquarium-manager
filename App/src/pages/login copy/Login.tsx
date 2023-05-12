@@ -17,7 +17,7 @@ import { LoginRequest, UserClient } from '../../services/rest/interface';
 import { IConfig } from '../../services/rest/iconfig';
 import config from "../../services/rest/server-config"
 import { AppStorage } from '../../services/utils/app-storage';
-import { FC } from 'react';
+import React from 'react';
 
 type formData = Readonly<LoginRequest>;
 
@@ -38,7 +38,7 @@ const formDescription: FormDescription<formData> = {
 
 const { Form, loading, error } = BuildForm(formDescription);
 
-export const Login: FC<RouteComponentProps<any>> = (props) => {
+export const Login: React.FunctionComponent<RouteComponentProps<any>> = (props) => {
 
   const dispatch = useDispatch();
 

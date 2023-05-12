@@ -122,7 +122,7 @@ export const BuildForm = <T extends { [index: string]: any }>
 
       const [formState, { raw }] = useFormState(initialState);
       const { isLoading, errorMessage } =
-        useSelector<FormBuilderReduxState, LoaderState>(state => state.formBuilder[name] || {
+        useSelector<FormBuilderReduxState, LoaderState>(state => state?.formBuilder?.[name] || {
           isLoading: false,
           errorMessage: ''
         });

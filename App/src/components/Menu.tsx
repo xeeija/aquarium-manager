@@ -1,6 +1,6 @@
 import React from "react"
 import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonListHeader, IonNote, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel } from "@ionic/react";
-import { logOutOutline, logOutSharp, logInOutline, logInSharp, logIn, home } from "ionicons/icons";
+import { logOutOutline, logOutSharp, logInOutline, logInSharp, logIn, home, personAdd } from "ionicons/icons";
 import { useSelector, useDispatch, useStore } from "react-redux";
 import { useLocation } from "react-router";
 import { loggedOut } from "../services/actions/actions";
@@ -20,6 +20,12 @@ const appPages: AppPage[] = [
     url: '/home',
     iosIcon: home,
     mdIcon: home
+  },
+  {
+    title: 'Register',
+    url: '/register',
+    iosIcon: personAdd,
+    mdIcon: personAdd,
   },
 ];
 

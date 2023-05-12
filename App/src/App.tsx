@@ -5,6 +5,7 @@ import { Redirect, Route } from 'react-router-dom';
 import Menu from './components/Menu';
 import Home from './pages/home/Home';
 import Login from './pages/login/Login';
+import Register from "./pages/register/Register";
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -39,6 +40,7 @@ const App: React.FC = () => {
             </Route>
             <Route path="/home" component={Home} exact={true} />
             <Route path="/login" component={Login} exact={true} />
+            <Route path="/register" component={Register} exact={true} />
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>
