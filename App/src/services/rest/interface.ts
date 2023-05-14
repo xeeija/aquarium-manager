@@ -1205,7 +1205,7 @@ export class UserClient extends AuthorizedApiBase {
     return Promise.resolve<ItemResponseModelOfUserResponse>(null as any);
   }
 
-  register(cred: User, cancelToken?: CancelToken | undefined): Promise<User> {
+  register(cred: User, cancelToken?: CancelToken | undefined): Promise<ItemResponseModelOfUserResponse> {
     let url_ = this.baseUrl + "/api/User/Register";
     url_ = url_.replace(/[?&]$/, "");
 
@@ -1235,7 +1235,7 @@ export class UserClient extends AuthorizedApiBase {
     });
   }
 
-  protected processRegister(response: AxiosResponse): Promise<User> {
+  protected processRegister(response: AxiosResponse): Promise<ItemResponseModelOfUserResponse> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && typeof response.headers === "object") {
@@ -1249,8 +1249,8 @@ export class UserClient extends AuthorizedApiBase {
       const _responseText = response.data;
       let result200: any = null;
       let resultData200 = _responseText;
-      result200 = User.fromJS(resultData200);
-      return Promise.resolve<User>(result200);
+      result200 = ItemResponseModelOfUserResponse.fromJS(resultData200);
+      return Promise.resolve<ItemResponseModelOfUserResponse>(result200);
 
     } else if (status === 401) {
       const _responseText = response.data;
@@ -2336,6 +2336,61 @@ export class LoginRequest implements ILoginRequest {
 export interface ILoginRequest {
   username?: string;
   password?: string;
+}
+
+export interface IRegisterRequest {
+  username?: string;
+  password?: string;
+  email?: string;
+  firstname?: string;
+  lastname?: string;
+}
+
+export class RegisterRequest implements IRegisterRequest {
+  username?: string;
+  password?: string;
+  email?: string;
+  firstname?: string;
+  lastname?: string;
+  active = true
+
+  constructor(data?: IRegisterRequest) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (this as any)[property] = (data as any)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.username = _data["username"];
+      this.password = _data["password"];
+      this.email = _data["email"];
+      this.firstname = _data["firstname"];
+      this.lastname = _data["lastname"];
+      this.active = true;
+    }
+  }
+
+  static fromJS(data: any): RegisterRequest {
+    data = typeof data === 'object' ? data : {};
+    let result = new RegisterRequest();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data["username"] = this.username;
+    data["password"] = this.password;
+    data["email"] = this.email;
+    data["firstname"] = this.firstname;
+    data["lastname"] = this.lastname;
+    data["active"] = this.active;
+    return data;
+  }
 }
 
 export interface FileParameter {

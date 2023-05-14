@@ -12,33 +12,32 @@ import {
   IonToolbar,
   IonPage
 } from '@ionic/react';
-import { LoginRequest, UserClient } from '../../services/rest/interface';
+import { RegisterRequest, UserClient } from '../../services/rest/interface';
 import { IConfig } from '../../services/rest/iconfig';
 import config from "../../services/rest/server-config"
 import { FC } from 'react';
 
-
-type FormData = Readonly<LoginRequest>;
+type FormData = Readonly<RegisterRequest>;
 
 const formDescription: FormDescription<FormData> = {
   name: 'register',
   fields: [
-    // {
-    //   name: 'email', label: 'Email', type: 'email',
-    //   position: 'floating', color: 'primary', validators: [Validator.required, Validator.email]
-    // },
+    {
+      name: 'firstname', label: 'Firstname', type: 'text',
+      position: 'floating', color: 'primary', validators: [Validator.required]
+    },
+    {
+      name: 'lastname', label: 'Lastname', type: 'text',
+      position: 'floating', color: 'primary', validators: [Validator.required]
+    },
+    {
+      name: 'email', label: 'Email', type: 'email',
+      position: 'floating', color: 'primary', validators: [Validator.required, Validator.email]
+    },
     {
       name: 'password', label: 'Password', type: 'password',
       position: 'floating', color: 'primary', validators: [Validator.required]
     },
-    // {
-    //   name: 'firstname', label: 'Firstname', type: 'text',
-    //   position: 'floating', color: 'primary', validators: [Validator.required]
-    // },
-    // {
-    //   name: 'lastname', label: 'Lastname', type: 'text',
-    //   position: 'floating', color: 'primary', validators: [Validator.required]
-    // }
   ],
   submitLabel: 'Register'
 }
@@ -52,20 +51,26 @@ export const Register: FC<RouteComponentProps<any>> = (props) => {
   const accessHeader = new IConfig()
   const userClient = new UserClient(accessHeader, config.host)
 
-  const submit = async (registerData: LoginRequest) => {
+  const submit = async (registerData: RegisterRequest) => {
     dispatch(loading(true));
+
+    // const user = new User({
+    //   ...registerData,
+    //   active: true,
+    // })
 
     userClient.register(registerData)
       .then(async (registerInfo) => {
 
-        if (!registerInfo) {
-          dispatch(error("An error occurred"))
+        if (registerInfo.hasError) {
+          const errors = Object.entries(registerInfo.errorMessages ?? {}).map(([k, v]) => `${k}: ${v}`).join("\\n")
+          dispatch(error(`An error occurred: ${errors}`))
           return
         }
 
         executeDelayed(200, () => props.history.push('/login'))
       })
-      .catch((err: Error) => dispatch(error('Error while logging in: ' + err.message)))
+      .catch((err: Error) => dispatch(error('Error while registering: ' + err.message)))
       .finally(() => dispatch(loading(false)))
   };
   return (
