@@ -1,9 +1,9 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from "react-dom/client"
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { Provider } from "react-redux";
 import { combineReducers } from "redux";
 import rootReducer from "./services/reducers";
-import { loggedIn } from './services/actions/actions';
+import { loggedIn } from './services/actions/user';
 import { loadUserData } from './services/rest/security-helper';
 import store from './services/store';
 
@@ -25,11 +25,12 @@ loadUserData()
 
 const render = () => {
   const App = require("./App").default;
-  ReactDOM.render(
+
+  const root = createRoot(document.getElementById("root")!)
+  root.render(
     <Provider store={store}>
       <App />
-    </Provider>,
-    document.getElementById("root")
+    </Provider>
   );
 };
 

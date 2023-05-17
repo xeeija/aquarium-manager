@@ -1,9 +1,9 @@
 import React from "react"
 import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonListHeader, IonNote, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel } from "@ionic/react";
-import { logOutOutline, logOutSharp, logInOutline, logInSharp, logIn, home, personAdd } from "ionicons/icons";
+import { logOutOutline, logOutSharp, logInOutline, logInSharp, logIn, home, personAdd, listSharp } from "ionicons/icons";
 import { useSelector, useDispatch, useStore } from "react-redux";
 import { useLocation } from "react-router";
-import { loggedOut } from "../services/actions/actions";
+import { loggedOut } from "../services/actions/user";
 import { RootState } from "../services/reducers";
 import { isNotExpired } from "../services/rest/security-helper";
 
@@ -34,7 +34,7 @@ var secureAppPage: AppPage[] = [
 ];
 
 function AddMenu(item: AppPage) {
-  if (secureAppPage.some(e => e.url === item.url) == false) {
+  if (secureAppPage.some(e => e.url === item.url) === false) {
     secureAppPage.push(item);
   }
 }
@@ -50,6 +50,13 @@ const Menu: React.FC = () => {
   var securityItem = null;
 
   if (isNotExpired(authentication)) {
+    AddMenu({
+      title: "Corals & Animals",
+      url: "/items",
+      iosIcon: listSharp,
+      mdIcon: listSharp
+    })
+
     securityItem = {
       title: 'Logout ' + user?.fullName,
       url: '/home',

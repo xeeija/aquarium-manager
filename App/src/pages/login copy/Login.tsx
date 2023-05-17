@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
-import { loggedIn } from '../../services/actions/actions';
+import { loggedIn } from '../../services/actions/user';
 import { executeDelayed } from '../../services/utils/async-helpers';
 import { FormDescription, BuildForm } from '../../services/utils/form-builder';
 import * as Validator from '../../services/utils/validators';

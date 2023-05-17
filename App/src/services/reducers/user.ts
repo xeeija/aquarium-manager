@@ -1,7 +1,7 @@
 import { createReducer } from "typesafe-actions";
-import { UserResponse } from "../rest/interface";
+import { Aquarium, UserResponse } from "../rest/interface";
 import { AnyAction } from "redux";
-import { loggedIn, loggedOut } from "../actions/actions";
+import { loggedIn, loggedOut, currentAquarium as currentAqua } from "../actions/user";
 import { clearUserData } from "../rest/security-helper";
 
 const initialState: UserResponse = {
@@ -21,3 +21,8 @@ export const user = createReducer<UserResponse, AnyAction>(initialState)
       return initialState;
     }
   )
+
+// export const currentAquarium = createReducer<Aquarium, AnyAction>(new Aquarium())
+//   .handleAction(currentAqua, (state, action) => {
+//     return action.payload
+//   })

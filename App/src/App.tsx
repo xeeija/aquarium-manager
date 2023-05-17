@@ -25,6 +25,8 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import { SecureRoute } from "./components/SecureRoute";
+import ItemsList from "./pages/items/ItemsList";
 
 setupIonicReact();
 
@@ -41,6 +43,7 @@ const App: React.FC = () => {
             <Route path="/home" component={Home} exact={true} />
             <Route path="/login" component={Login} exact={true} />
             <Route path="/register" component={Register} exact={true} />
+            <SecureRoute path="/items" component={ItemsList} exact={true} />
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>
