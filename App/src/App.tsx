@@ -28,6 +28,7 @@ import './theme/variables.css';
 import { SecureRoute } from "./components/SecureRoute";
 import ItemsList from "./pages/items/ItemsList";
 import ItemDetail from "./pages/items/ItemDetail";
+import AddEditItem from "./pages/items/AddEditItem";
 
 setupIonicReact();
 
@@ -44,8 +45,10 @@ const App: React.FC = () => {
             <SecureRoute path="/items" component={ItemsList} exact={true} />
             <SecureRoute path="/coral/show/:id" component={ItemDetail("coral")} exact={true} />
             <SecureRoute path="/animal/show/:id" component={ItemDetail("animal")} exact={true} />
-            {/* <SecureRoute path="/coral/add" component={AddEditItem("coral")} exact={true} />
-            <SecureRoute path="/animal/add" component={AddEditItem("animal")} exact={true} /> */}
+            <SecureRoute path="/coral/edit/:id" component={AddEditItem("coral", "edit")} exact={true} />
+            <SecureRoute path="/animal/edit/:id" component={AddEditItem("animal", "edit")} exact={true} />
+            <SecureRoute path="/coral/add" component={AddEditItem("coral", "add")} exact={true} />
+            <SecureRoute path="/animal/add" component={AddEditItem("animal", "add")} exact={true} />
             <Route path="/" exact={true}>
               <Redirect to="/home" />
             </Route>

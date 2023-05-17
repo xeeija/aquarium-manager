@@ -9,14 +9,14 @@ import { pencil } from "ionicons/icons";
 import { capitalize, shortDate } from "../../services/utils/format";
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default (mode: "coral" | "animal"): FC<RouteComponentProps<{ id: string }>> => ({ match, history }) => {
+export default (type: "coral" | "animal"): FC<RouteComponentProps<{ id: string }>> => ({ match, history }) => {
 
   const { coral, animal, isLoading, errorMessage } = useSelector((s: RootState) => s.item);
   const token = useSelector((s: RootState) => s.user.authenticationInformation!.token || '');
   const dispatch = useDispatch();
   const thunkDispatch = dispatch as ThunkDispatch<RootState, null, CoralResult | AnimalResult>;
   useEffect(() => {
-    if (mode === "coral") {
+    if (type === "coral") {
       thunkDispatch(fetchCoralAction(match.params.id)).then(x => console.log(x));
       console.log(coral);
     } else {
@@ -25,7 +25,7 @@ export default (mode: "coral" | "animal"): FC<RouteComponentProps<{ id: string }
     }
   }, []);
 
-  const item = mode === "coral" ? coral : animal;
+  const item = type === "coral" ? coral : animal;
 
   return (
     <IonPage>
@@ -35,7 +35,7 @@ export default (mode: "coral" | "animal"): FC<RouteComponentProps<{ id: string }
             <IonMenuButton />
           </IonButtons>
           <IonButtons slot="primary">
-            <IonButton onClick={() => history.push(`${history.location.pathname}/edit`)}>
+            <IonButton onClick={() => history.push(`${history.location.pathname.replace("show", "edit")}`)}>
               <IonIcon slot="icon-only" icon={pencil} />
             </IonButton>
           </IonButtons>
@@ -43,7 +43,7 @@ export default (mode: "coral" | "animal"): FC<RouteComponentProps<{ id: string }
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        {isLoading && <IonItem><IonSpinner />Loading {capitalize(mode)}s...</IonItem>}
+        {isLoading && <IonItem><IonSpinner />Loading {capitalize(type)}s...</IonItem>}
         {!isLoading && (
           <IonCard>
             <IonCardHeader>
@@ -52,8 +52,8 @@ export default (mode: "coral" | "animal"): FC<RouteComponentProps<{ id: string }
             </IonCardHeader>
 
             <IonCardContent>
-              {mode === "coral" && <p>Type: {coral?.coralType}</p>}
-              {mode === "animal" && <p>{animal?.isAlive ? "Still Alive" : `Died on ${shortDate(animal?.deathDate)}`}</p>}
+              {type === "coral" && <p>Type: {coral?.coralType}</p>}
+              {type === "animal" && <p>{animal?.isAlive ? "Still Alive" : `Died on ${shortDate(animal?.deathDate)}`}</p>}
               <p>Inserted: {shortDate(item?.inserted)}</p>
               <p>Amount: {item?.amount}</p>
             </IonCardContent>
