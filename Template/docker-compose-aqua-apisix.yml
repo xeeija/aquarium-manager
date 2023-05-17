@@ -87,7 +87,7 @@ services:
       - "5001:5001"
   apisix-dashboard:
     container_name: 2023_apisix-dashboard
-    image: apache/apisix-dashboard:3.0.0-alpine
+    image: apache/apisix-dashboard:3.0.1-alpine
     volumes:
       - ./dashboard_conf/conf.yaml:/usr/local/apisix-dashboard/conf/conf.yaml
     ports:
@@ -98,7 +98,7 @@ services:
 
   apisix:
     container_name: 2023_apisix
-    image: apache/apisix:${APISIX_IMAGE_TAG:-3.1.0-debian}
+    image: apache/apisix:${APISIX_IMAGE_TAG:-3.3.0-debian}
     volumes:
       - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
     depends_on:
