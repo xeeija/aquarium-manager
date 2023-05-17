@@ -1,6 +1,6 @@
 import { AnyAction } from "redux";
 import { createReducer } from "typesafe-actions";
-import { fetchCoralActions, fetchAnimalActions, editAnimalAction, editAnimalActions, editCoralActions } from "../actions/item";
+import { fetchCoralActions, fetchAnimalActions, editAnimalActions, editCoralActions, addAnimalActions } from "../actions/item";
 import { Coral, Animal } from "../rest/interface";
 
 const initialState: AquariumItemState = {
@@ -45,4 +45,11 @@ export const item = createReducer<AquariumItemState, AnyAction>(initialState)
   .handleAction(editAnimalActions.success, (state, action) =>
     ({ ...state, isLoading: false, animal: action.payload.data }))
   .handleAction(editAnimalActions.failure, (state, action) =>
+    ({ ...state, isLoading: false, errorMessage: action.payload.message }))
+  // add animal
+  .handleAction(addAnimalActions.request, (state, action) =>
+    ({ ...state, isLoading: true, errorMessage: '' }))
+  .handleAction(addAnimalActions.success, (state, action) =>
+    ({ ...state, isLoading: false, animal: action.payload.data }))
+  .handleAction(addAnimalActions.failure, (state, action) =>
     ({ ...state, isLoading: false, errorMessage: action.payload.message }))

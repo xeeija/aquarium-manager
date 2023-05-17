@@ -5,7 +5,7 @@ import { RootState } from "../reducers";
 import { IConfig } from "../rest/iconfig";
 import { Coral, AquariumClient, Animal, ItemResponseModelOfAnimal, ItemResponseModelOfCoral } from "../rest/interface";
 import config from "../rest/server-config";
-import { formatErrors as formatErrors } from "../utils/format";
+import { formatErrors } from "../utils/format";
 
 export const fetchCoralActions = createAsyncAction(
   'FETCH_CORAL_REQUEST',
@@ -120,5 +120,70 @@ export const editAnimalAction = (animalId: string, animal: Animal): ThunkAction<
       )
       .catch(
         err => dispatch(editAnimalActions.failure(err))
+      )
+  };
+
+// export const editCoralActions = createAsyncAction(
+//   'EDIT_CORAL_REQUEST',
+//   'EDIT_CORAL_SUCCESS',
+//   'EDIT_CORAL_FAILURE')<void, ItemResponseModelOfCoral, Error>();
+
+// export type EditCoralResult = ReturnType<typeof editCoralActions.success> | ReturnType<typeof editCoralActions.failure>
+
+// export const editCoralAction = (coralId: string, coral: Coral): ThunkAction<Promise<EditCoralResult>, RootState, null, AnyAction> =>
+//   (dispatch, getState) => {
+
+//     dispatch(editCoralActions.request());
+//     const token = getState().user.authenticationInformation!.token || '';
+//     const accessheader = new IConfig();
+//     accessheader.setToken(token);
+//     const aquariumClient = new AquariumClient(accessheader, config.host);
+
+//     return aquariumClient.coralPUT("SchiScho", coralId, coral)
+//       .then(
+//         coralResponse => {
+//           if (coralResponse.hasError) {
+//             return dispatch(editCoralActions.failure(new Error(`An error occurred: ${formatErrors(coralResponse.errorMessages)}`)))
+//           }
+
+//           return dispatch(editCoralActions.success(coralResponse))
+//         }
+//       )
+//       .catch(
+//         err => dispatch(editCoralActions.failure(err))
+//       )
+//   };
+
+export const addAnimalActions = createAsyncAction(
+  'ADD_ANIMAL_REQUEST',
+  'ADD_ANIMAL_SUCCESS',
+  'ADD_ANIMAL_FAILURE')<void, ItemResponseModelOfAnimal, Error>();
+
+export type AddAnimalResult = ReturnType<typeof addAnimalActions.success> | ReturnType<typeof addAnimalActions.failure>
+
+export const addAnimalAction = (animal: Animal): ThunkAction<Promise<AddAnimalResult>, RootState, null, AnyAction> =>
+  (dispatch, getState) => {
+
+    dispatch(addAnimalActions.request());
+    const token = getState().user.authenticationInformation!.token || '';
+    const accessheader = new IConfig();
+    accessheader.setToken(token);
+    const aquariumClient = new AquariumClient(accessheader, config.host);
+
+    // add aquarium property, otherwise post request fails (500, cors)
+    const animalRequest = new Animal({ ...animal, aquarium: "SchiScho" })
+
+    return aquariumClient.animalPOST("SchiScho", animalRequest)
+      .then(
+        animalResponse => {
+          if (animalResponse.hasError) {
+            return dispatch(addAnimalActions.failure(new Error(`An error occurred: ${formatErrors(animalResponse.errorMessages)}`)))
+          }
+
+          return dispatch(addAnimalActions.success(animalResponse))
+        }
+      )
+      .catch(
+        err => dispatch(addAnimalActions.failure(err))
       )
   };

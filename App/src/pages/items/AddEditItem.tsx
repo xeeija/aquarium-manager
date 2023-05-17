@@ -1,16 +1,14 @@
 import { FC, useEffect } from "react"
 import { RouteComponentProps } from "react-router"
 import { BuildForm, FieldDescriptionType, FormDescription } from "../../services/utils/form-builder";
-import { Animal, AquariumClient, Coral } from "../../services/rest/interface";
+import { Animal, Coral, ItemResponseModelOfAnimal } from "../../services/rest/interface";
 import * as Validator from '../../services/utils/validators';
 import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent } from "@ionic/react";
 import { useDispatch, useSelector } from "react-redux";
-import { IConfig } from "../../services/rest/iconfig";
 import { executeDelayed } from "../../services/utils/async-helpers";
-import config from "../../services/rest/server-config"
 import { capitalize } from "../../services/utils/format";
 import { ThunkDispatch } from "redux-thunk";
-import { CoralResult, AnimalResult, fetchCoralAction, fetchAnimalAction, EditAnimalResult, editAnimalAction, editCoralAction, EditCoralResult } from "../../services/actions/item";
+import { CoralResult, AnimalResult, fetchCoralAction, fetchAnimalAction, EditAnimalResult, editAnimalAction, editCoralAction, EditCoralResult, AddAnimalResult, addAnimalAction } from "../../services/actions/item";
 import { RootState } from "../../services/reducers";
 
 type FormDataCoral = Readonly<Coral>;
@@ -35,7 +33,7 @@ const itemFields: FieldDescriptionType<Readonly<Animal | Coral>>[] = [
   },
   {
     name: 'description', label: 'Description', type: 'text',
-    position: 'floating', color: 'primary', validators: [Validator.required]
+    position: 'floating', color: 'primary',
   },
 ]
 
@@ -51,11 +49,11 @@ const animalFields: FieldDescriptionType<Readonly<Animal>>[] = [
         value: "Dead"
       },
     ],
-    position: 'floating', color: 'primary', validators: []
+    position: 'floating', color: 'primary',
   },
   {
     name: 'deathDate', label: 'Death date', type: 'date',
-    position: 'floating', color: 'primary', validators: []
+    position: 'floating', color: 'primary',
   },
 ]
 
@@ -92,57 +90,52 @@ export default (type: "coral" | "animal", mode: "add" | "edit"): FC<RouteCompone
   const { coral, animal } = useSelector((s: RootState) => s.item);
   const dispatch = useDispatch();
 
-  const thunkDispatchEdit = dispatch as ThunkDispatch<RootState, null, EditAnimalResult | EditCoralResult>;
   const thunkDispatch = dispatch as ThunkDispatch<RootState, null, CoralResult | AnimalResult>;
+  const thunkDispatchEdit = dispatch as ThunkDispatch<RootState, null, EditAnimalResult | EditCoralResult>;
+  const thunkDispatchAdd = dispatch as ThunkDispatch<RootState, null, AddAnimalResult>;
 
   useEffect(() => {
     if (mode === "add") {
       return
     }
 
-    if (type === "coral") {
-      thunkDispatch(fetchCoralAction(match.params.id ?? "")).then(x => console.log(x));
-      console.log(coral);
-    } else {
+    if (type === "animal") {
       thunkDispatch(fetchAnimalAction(match.params.id ?? "")).then(x => console.log(x));
-      console.log(animal);
+    } else {
+      thunkDispatch(fetchCoralAction(match.params.id ?? "")).then(x => console.log(x));
     }
-  }, []);
-
-  const accessHeader = new IConfig()
-  const aquariumClient = new AquariumClient(accessHeader, config.host);
+  }, [match.params.id, thunkDispatch]);
 
   const submitAdd = async (itemData: Animal | Coral) => {
     dispatch(loading(true));
 
-    const itemPost = type === "animal" ? aquariumClient.animalPOST : aquariumClient.coralPOST
+    const itemDispatch = type === "animal"
+      ? thunkDispatchAdd(addAnimalAction(itemData))
+      : thunkDispatchAdd(addAnimalAction(itemData))
 
-    itemPost("SchiScho", itemData)
-      .then(async (itemResponse) => {
-
-        if (itemResponse.hasError) {
-          const errors = Object.entries(itemResponse.errorMessages ?? {}).map(([k, v]) => `${k}: ${v}`).join("\\n")
-          dispatch(error(`An error occurred: ${errors}`))
-          return
-        }
-
-        executeDelayed(200, () => history.push(history.location.pathname.replace("edit", "show")))
+    itemDispatch
+      .then(x => {
+        console.log(x)
+        executeDelayed(200, () => history.push(`/${type}/show/${(x.payload as ItemResponseModelOfAnimal).data?.id}`))
       })
-      .catch((err: Error) => dispatch(error('Error while registering: ' + err.message)))
-      .finally(() => dispatch(loading(false)))
+      .finally(() => dispatch(loading(false)));
+
   };
 
   const submitEdit = async (itemData: Animal | Coral) => {
     dispatch(loading(true));
 
-    const editAction = type === "animal" ? editCoralAction : editCoralAction
+    const itemDispatch = type === "animal"
+      ? thunkDispatchEdit(editAnimalAction(itemData.id ?? "", itemData))
+      : thunkDispatchEdit(editCoralAction(itemData.id ?? "", itemData))
 
-    thunkDispatchEdit(editAction(itemData.id ?? "", itemData))
+    itemDispatch
       .then(x => {
         console.log(x)
         executeDelayed(200, () => history.push(history.location.pathname.replace("edit", "show")))
       })
       .finally(() => dispatch(loading(false)));
+
   };
 
   return (
@@ -157,7 +150,7 @@ export default (type: "coral" | "animal", mode: "add" | "edit"): FC<RouteCompone
       </IonHeader>
 
       <IonContent>
-        <Form handleSubmit={mode === "add" ? submitAdd : submitEdit} initialState={type === "animal" ? animal : coral} />
+        <Form handleSubmit={mode === "add" ? submitAdd : submitEdit} initialState={mode === "add" ? undefined : (type === "animal" ? animal : coral)} />
       </IonContent>
     </IonPage>
   )
