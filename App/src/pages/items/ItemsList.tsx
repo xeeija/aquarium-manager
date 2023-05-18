@@ -48,10 +48,8 @@ const ItemsList: React.FC<RouteComponentProps> = ({ history }) => {
   const thunkDispatch = dispatch as ThunkDispatch<RootState, null, CoralsResult | AnimalsResult>;
   useEffect(() => {
     thunkDispatch(fetchCoralsAction()).then(x => console.log(x));
-    console.log(corals);
     thunkDispatch(fetchAnimalsAction()).then(x => console.log(x));
-    console.log(animals);
-  }, []);
+  }, [thunkDispatch]);
 
   const NoValuesInfo = () => !isLoading && corals.length === 0 ?
     (<IonCard>

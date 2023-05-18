@@ -3,12 +3,12 @@ import { RouteComponentProps } from "react-router"
 import { BuildForm, FieldDescriptionType, FormDescription } from "../../services/utils/form-builder";
 import { Animal, Coral, ItemResponseModelOfAnimal } from "../../services/rest/interface";
 import * as Validator from '../../services/utils/validators';
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent } from "@ionic/react";
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonToast } from "@ionic/react";
 import { useDispatch, useSelector } from "react-redux";
 import { executeDelayed } from "../../services/utils/async-helpers";
 import { capitalize } from "../../services/utils/format";
 import { ThunkDispatch } from "redux-thunk";
-import { CoralResult, AnimalResult, fetchCoralAction, fetchAnimalAction, EditAnimalResult, editAnimalAction, editCoralAction, EditCoralResult, AddAnimalResult, addAnimalAction } from "../../services/actions/item";
+import { CoralResult, AnimalResult, fetchCoralAction, fetchAnimalAction, EditAnimalResult, editAnimalAction, editCoralAction, EditCoralResult, AddAnimalResult, addAnimalAction, addCoralAction, AddCoralResult } from "../../services/actions/item";
 import { RootState } from "../../services/reducers";
 
 type FormDataCoral = Readonly<Coral>;
@@ -62,11 +62,11 @@ const coralFields: FieldDescriptionType<Readonly<Coral>>[] = [
     name: 'coralType', label: 'Coral Type', type: 'select', options: [
       {
         key: "HardCoral",
-        value: "HardCoral"
+        value: "Hard Coral"
       },
       {
         key: "SoftCoral",
-        value: "SoftCoral"
+        value: "Soft Coral"
       },
     ],
     position: 'floating', color: 'primary', validators: [Validator.required]
@@ -87,12 +87,12 @@ export default (type: "coral" | "animal", mode: "add" | "edit"): FC<RouteCompone
 
   const { Form, loading, error } = BuildForm(formDescription(mode, type));
 
-  const { coral, animal } = useSelector((s: RootState) => s.item);
+  const { coral, animal, errorMessage } = useSelector((s: RootState) => s.item);
   const dispatch = useDispatch();
 
   const thunkDispatch = dispatch as ThunkDispatch<RootState, null, CoralResult | AnimalResult>;
   const thunkDispatchEdit = dispatch as ThunkDispatch<RootState, null, EditAnimalResult | EditCoralResult>;
-  const thunkDispatchAdd = dispatch as ThunkDispatch<RootState, null, AddAnimalResult>;
+  const thunkDispatchAdd = dispatch as ThunkDispatch<RootState, null, AddAnimalResult | AddCoralResult>;
 
   useEffect(() => {
     if (mode === "add") {
@@ -111,12 +111,20 @@ export default (type: "coral" | "animal", mode: "add" | "edit"): FC<RouteCompone
 
     const itemDispatch = type === "animal"
       ? thunkDispatchAdd(addAnimalAction(itemData))
-      : thunkDispatchAdd(addAnimalAction(itemData))
+      : thunkDispatchAdd(addCoralAction(itemData))
 
     itemDispatch
       .then(x => {
         console.log(x)
-        executeDelayed(200, () => history.push(`/${type}/show/${(x.payload as ItemResponseModelOfAnimal).data?.id}`))
+        executeDelayed(200, () => {
+          const id = (x.payload as ItemResponseModelOfAnimal).data?.id
+          if (id) {
+            history.push(`/${type}/show/${id}`)
+          }
+        })
+      })
+      .catch((err) => {
+        console.error(err)
       })
       .finally(() => dispatch(loading(false)));
 
@@ -152,6 +160,14 @@ export default (type: "coral" | "animal", mode: "add" | "edit"): FC<RouteCompone
       <IonContent>
         <Form handleSubmit={mode === "add" ? submitAdd : submitEdit} initialState={mode === "add" ? undefined : (type === "animal" ? animal : coral)} />
       </IonContent>
+
+      <IonToast
+        isOpen={errorMessage ? errorMessage.length > 0 : false}
+        onDidDismiss={() => false}
+        message={errorMessage}
+        duration={5000}
+        color='danger'
+      />
     </IonPage>
   )
 }
