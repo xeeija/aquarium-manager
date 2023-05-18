@@ -36,14 +36,13 @@ import {
   fetchAnimalsAction,
   fetchCoralsAction
 } from "../../services/actions/items";
-import { IconConverter } from '../../services/utils/iconConverter';
 //import {fetchValues} from "../../services/rest/values";
 
 
 const ItemsList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const { corals, animals, isLoading, errorMessage } = useSelector((s: RootState) => s.items);
-  const token = useSelector((s: RootState) => s.user.authenticationInformation!.token || '');
+  // const token = useSelector((s: RootState) => s.user.authenticationInformation!.token || '');
   const dispatch = useDispatch();
   const thunkDispatch = dispatch as ThunkDispatch<RootState, null, CoralsResult | AnimalsResult>;
   useEffect(() => {
@@ -64,7 +63,7 @@ const ItemsList: React.FC<RouteComponentProps> = ({ history }) => {
     const items = corals.map(coral => {
 
       let icon = flower;
-      let unit = "";
+      // let unit = "";
 
       return (
         <IonItemSliding key={coral.id}>
@@ -90,7 +89,7 @@ const ItemsList: React.FC<RouteComponentProps> = ({ history }) => {
     const items = animals.map(animal => {
 
       let icon = fish;
-      let unit = "";
+      // let unit = "";
 
       return (
         <IonItemSliding key={animal.id}>

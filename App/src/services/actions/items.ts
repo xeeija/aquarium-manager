@@ -22,15 +22,12 @@ export const fetchCoralsAction = (): ThunkAction<Promise<CoralsResult>, RootStat
     accessheader.setToken(token);
     // accessheader.getAuthorization()
     const aquariumClient = new AquariumClient(accessheader, config.host);
+    const aquarium = getState().currentAquarium.name ?? ""
 
     // getCorals: getState().currentAquarium.name!
-    return aquariumClient.getCorals("SchiScho")
-      .then(
-        corals => dispatch(fetchCoralsActions.success(corals))
-      )
-      .catch(
-        err => dispatch(fetchCoralsActions.failure(err))
-      )
+    return aquariumClient.getCorals(aquarium)
+      .then(corals => dispatch(fetchCoralsActions.success(corals)))
+      .catch(err => dispatch(fetchCoralsActions.failure(err)))
   };
 
 
@@ -50,13 +47,10 @@ export const fetchAnimalsAction = (): ThunkAction<Promise<AnimalsResult>, RootSt
     accessheader.setToken(token);
     // accessheader.getAuthorization()
     const aquariumClient = new AquariumClient(accessheader, config.host);
+    const aquarium = getState().currentAquarium.name ?? ""
 
     // getCorals: getState().currentAquarium.name!
-    return aquariumClient.getAnimals("SchiScho")
-      .then(
-        animals => dispatch(fetchAnimalsActions.success(animals))
-      )
-      .catch(
-        err => dispatch(fetchAnimalsActions.failure(err))
-      )
+    return aquariumClient.getAnimals(aquarium)
+      .then(animals => dispatch(fetchAnimalsActions.success(animals)))
+      .catch(err => dispatch(fetchAnimalsActions.failure(err)))
   };

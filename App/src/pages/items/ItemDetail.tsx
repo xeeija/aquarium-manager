@@ -18,12 +18,10 @@ export default (type: "coral" | "animal"): FC<RouteComponentProps<{ id: string }
   useEffect(() => {
     if (type === "coral") {
       thunkDispatch(fetchCoralAction(match.params.id)).then(x => console.log(x));
-      console.log(coral);
     } else {
       thunkDispatch(fetchAnimalAction(match.params.id)).then(x => console.log(x));
-      console.log(animal);
     }
-  }, []);
+  }, [match.params.id, thunkDispatch]);
 
   const item = type === "coral" ? coral : animal;
 

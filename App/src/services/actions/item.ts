@@ -23,15 +23,12 @@ export const fetchCoralAction = (id: string): ThunkAction<Promise<CoralResult>, 
     accessheader.setToken(token);
     // accessheader.getAuthorization()
     const aquariumClient = new AquariumClient(accessheader, config.host);
+    const aquarium = getState().currentAquarium.name ?? ""
 
     // getCorals: getState().currentAquarium.name!
-    return aquariumClient.getCoral("SchiScho", id)
-      .then(
-        coral => dispatch(fetchCoralActions.success(coral))
-      )
-      .catch(
-        err => dispatch(fetchCoralActions.failure(err))
-      )
+    return aquariumClient.getCoral(aquarium, id)
+      .then(coral => dispatch(fetchCoralActions.success(coral)))
+      .catch(err => dispatch(fetchCoralActions.failure(err)))
   };
 
 export const fetchAnimalActions = createAsyncAction(
@@ -50,15 +47,12 @@ export const fetchAnimalAction = (id: string): ThunkAction<Promise<AnimalResult>
     accessheader.setToken(token);
     // accessheader.getAuthorization()
     const aquariumClient = new AquariumClient(accessheader, config.host);
+    const aquarium = getState().currentAquarium.name ?? ""
 
     // getCorals: getState().currentAquarium.name!
-    return aquariumClient.getAnimal("SchiScho", id)
-      .then(
-        animal => dispatch(fetchAnimalActions.success(animal))
-      )
-      .catch(
-        err => dispatch(fetchAnimalActions.failure(err))
-      )
+    return aquariumClient.getAnimal(aquarium, id)
+      .then(animal => dispatch(fetchAnimalActions.success(animal)))
+      .catch(err => dispatch(fetchAnimalActions.failure(err)))
   };
 
 export const editCoralActions = createAsyncAction(
@@ -76,20 +70,17 @@ export const editCoralAction = (coralId: string, coral: Coral): ThunkAction<Prom
     const accessheader = new IConfig();
     accessheader.setToken(token);
     const aquariumClient = new AquariumClient(accessheader, config.host);
+    const aquarium = getState().currentAquarium.name ?? ""
 
-    return aquariumClient.coralPUT("SchiScho", coralId, coral)
-      .then(
-        coralResponse => {
-          if (coralResponse.hasError) {
-            return dispatch(editCoralActions.failure(new Error(`An error occurred: ${formatErrors(coralResponse.errorMessages)}`)))
-          }
-
-          return dispatch(editCoralActions.success(coralResponse))
+    return aquariumClient.coralPUT(aquarium, coralId, coral)
+      .then(coralResponse => {
+        if (coralResponse.hasError) {
+          return dispatch(editCoralActions.failure(new Error(`An error occurred: ${formatErrors(coralResponse.errorMessages)}`)))
         }
-      )
-      .catch(
-        err => dispatch(editCoralActions.failure(err))
-      )
+
+        return dispatch(editCoralActions.success(coralResponse))
+      })
+      .catch(err => dispatch(editCoralActions.failure(err)))
   };
 
 export const editAnimalActions = createAsyncAction(
@@ -107,22 +98,18 @@ export const editAnimalAction = (animalId: string, animal: Animal): ThunkAction<
     const accessheader = new IConfig();
     accessheader.setToken(token);
     const aquariumClient = new AquariumClient(accessheader, config.host);
+    const aquarium = getState().currentAquarium.name ?? ""
 
-    return aquariumClient.animalPUT("SchiScho", animalId, animal)
-      .then(
-        animalResponse => {
-          if (animalResponse.hasError) {
-            return dispatch(editAnimalActions.failure(new Error(`An error occurred: ${formatErrors(animalResponse.errorMessages)}`)))
-          }
-
-          return dispatch(editAnimalActions.success(animalResponse))
+    return aquariumClient.animalPUT(aquarium, animalId, animal)
+      .then(animalResponse => {
+        if (animalResponse.hasError) {
+          return dispatch(editAnimalActions.failure(new Error(`An error occurred: ${formatErrors(animalResponse.errorMessages)}`)))
         }
-      )
-      .catch(
-        err => dispatch(editAnimalActions.failure(err))
-      )
-  };
 
+        return dispatch(editAnimalActions.success(animalResponse))
+      })
+      .catch(err => dispatch(editAnimalActions.failure(err)))
+  };
 
 export const addCoralActions = createAsyncAction(
   'ADD_CORAL_REQUEST',
@@ -139,21 +126,20 @@ export const addCoralAction = (coral: Coral): ThunkAction<Promise<AddCoralResult
     const accessheader = new IConfig();
     accessheader.setToken(token);
     const aquariumClient = new AquariumClient(accessheader, config.host);
+    const aquarium = getState().currentAquarium.name ?? ""
 
     // add aquarium property, otherwise post request fails (500, cors)
     const coralRequest = new Coral()
-    coralRequest.init({ ...coral, aquarium: "SchiScho" })
+    coralRequest.init({ ...coral, aquarium: aquarium })
 
-    return aquariumClient.coralPOST("SchiScho", coralRequest)
-      .then(
-        coralResponse => {
-          if (coralResponse.hasError) {
-            return dispatch(addCoralActions.failure(new Error(`An error occurred: ${formatErrors(coralResponse.errorMessages)}`)))
-          }
-
-          return dispatch(addCoralActions.success(coralResponse))
+    return aquariumClient.coralPOST(aquarium, coralRequest)
+      .then(coralResponse => {
+        if (coralResponse.hasError) {
+          return dispatch(addCoralActions.failure(new Error(`An error occurred: ${formatErrors(coralResponse.errorMessages)}`)))
         }
-      )
+
+        return dispatch(addCoralActions.success(coralResponse))
+      })
       .catch(err => dispatch(addCoralActions.failure(err)))
   };
 
@@ -172,20 +158,19 @@ export const addAnimalAction = (animal: Animal): ThunkAction<Promise<AddAnimalRe
     const accessheader = new IConfig();
     accessheader.setToken(token);
     const aquariumClient = new AquariumClient(accessheader, config.host);
+    const aquarium = getState().currentAquarium.name ?? ""
 
     // add aquarium property, otherwise post request fails (500, cors)
     const animalRequest = new Animal()
-    animalRequest.init({ ...animal, aquarium: "SchiScho" })
+    animalRequest.init({ ...animal, aquarium })
 
-    return aquariumClient.animalPOST("SchiScho", animalRequest)
-      .then(
-        animalResponse => {
-          if (animalResponse.hasError) {
-            return dispatch(addAnimalActions.failure(new Error(`An error occurred: ${formatErrors(animalResponse.errorMessages)}`)))
-          }
-
-          return dispatch(addAnimalActions.success(animalResponse))
+    return aquariumClient.animalPOST(aquarium, animalRequest)
+      .then(animalResponse => {
+        if (animalResponse.hasError) {
+          return dispatch(addAnimalActions.failure(new Error(`An error occurred: ${formatErrors(animalResponse.errorMessages)}`)))
         }
-      )
+
+        return dispatch(addAnimalActions.success(animalResponse))
+      })
       .catch(err => dispatch(addAnimalActions.failure(err)))
   };

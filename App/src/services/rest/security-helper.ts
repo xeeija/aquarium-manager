@@ -3,24 +3,49 @@ import { AuthenticationInformation } from "./interface";
 
 const storage = new AppStorage();
 //storage.//store.create();
-export const loadUserData = () => Promise.all([storage.get('user'), storage.get('authentication'), storage.get('aquarium')])
-  .then(([user, authentication, aquarium]) => ({ user: user ? JSON.parse(user) : null, authentication: authentication ? JSON.parse(authentication) : null, aquarium: aquarium ? JSON.parse(aquarium) : null }))
+export const loadUserData = async () => {
+  const [user, authentication, aquarium] = await Promise.all([
+    storage.get('user'),
+    storage.get('authentication'),
+    storage.get('aquarium')
+  ])
+  return {
+    user: user ? JSON.parse(user) : null,
+    authentication: authentication ? JSON.parse(authentication) : null,
+    aquarium: aquarium ? JSON.parse(aquarium) : null
+  }
+}
 
-export const clearUserData = () => Promise.all([storage.remove('user'), storage.remove('authentication')])
+export const clearUserData = async () => await Promise.all([
+  storage.remove('user'),
+  storage.remove('authentication'),
+  storage.remove("aquarium"),
+])
 
-export const getUserInfo = () => Promise.all([storage.get('user'), storage.get('authentication')])
-  .then(([user, authentication]) => {
-    if (user.value && authentication.value)
-      return { user: JSON.parse(user.value), authentication: JSON.parse(authentication.value) }
-    else throw new Error('Not logged in!')
-  })
+export const getUserInfo = async () => {
+  // const [user, authentication, aquarium] = await Promise.all([
+  const [user, authentication] = await Promise.all([
+    storage.get('user'),
+    storage.get('authentication'),
+    // storage.get('aquarium'),
+  ])
+
+  // .then(([user, authentication]) => {
+  if (user.value && authentication.value)
+    return {
+      user: JSON.parse(user.value),
+      authentication: JSON.parse(authentication.value),
+      // aquarium: JSON.parse(aquarium.value),
+    }
+  else throw new Error('Not logged in!')
+}
 
 export const isNotExpired = (token: AuthenticationInformation | null | undefined) => {
-  if (!token || token.token == "") {
+  if (!token || token.token === "") {
     return false;
   }
   const dec = token.expirationDate;
-  if (dec != undefined) {
+  if (dec !== undefined) {
     const future = new Date(dec * 1000);
     const now = new Date();
     if (future > now) {
