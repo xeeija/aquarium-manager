@@ -57,6 +57,13 @@ const Menu: React.FC = () => {
       mdIcon: listSharp
     })
 
+    AddMenu({
+      title: "Values",
+      url: "/values",
+      iosIcon: listSharp,
+      mdIcon: listSharp,
+    })
+
     securityItem = {
       title: 'Logout ' + user?.fullName,
       url: '/home',
