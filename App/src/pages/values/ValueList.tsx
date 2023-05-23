@@ -59,7 +59,7 @@ const ValueList: FC<RouteComponentProps> = ({ history }) => {
     const dataClient = new ValueClient(accessHeader, config.datahost)
 
     // TODO: Move into custom redux action
-    dataClient.getLastValues("SchiScho")
+    dataClient.getLastValues(current.name ?? "")
       .then(values => dispatch(fetchValuesActions.success(values)))
       .then(() => event.detail.complete)
       .catch(() => dispatch(fetchValuesActions.failure(new Error(`Error while refreshing`))))
@@ -99,6 +99,8 @@ const ValueList: FC<RouteComponentProps> = ({ history }) => {
           </IonItemSliding>
         );
       }
+
+      return null;
     });
     return items.length > 0 ? <IonList>{items}</IonList> : <NoValuesInfo />;
   };
