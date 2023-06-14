@@ -1,6 +1,6 @@
 import React from "react"
 import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonListHeader, IonNote, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel } from "@ionic/react";
-import { logOutOutline, logOutSharp, logInOutline, logInSharp, logIn, home, personAdd, listSharp } from "ionicons/icons";
+import { logOutOutline, logOutSharp, logInOutline, logInSharp, logIn, home, personAdd, listSharp, image } from "ionicons/icons";
 import { useSelector, useDispatch, useStore } from "react-redux";
 import { useLocation } from "react-router";
 import { loggedOut } from "../services/actions/user";
@@ -62,6 +62,13 @@ const Menu: React.FC = () => {
       url: "/values",
       iosIcon: listSharp,
       mdIcon: listSharp,
+    })
+
+    AddMenu({
+      title: "Images",
+      url: "/images",
+      iosIcon: image,
+      mdIcon: image,
     })
 
     securityItem = {

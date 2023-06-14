@@ -4,6 +4,7 @@ import { items } from "./items";
 import { item } from "./item";
 import { formBuilderReducer } from "../utils/form-builder";
 import { values } from "./values";
+import { pictures } from "./pictures";
 
 const rootReducer = combineReducers({
   user,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   items,
   item,
   values,
+  pictures,
   formbuilder: formBuilderReducer
 });
 

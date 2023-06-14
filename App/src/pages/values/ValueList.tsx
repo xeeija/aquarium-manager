@@ -62,7 +62,7 @@ const ValueList: FC<RouteComponentProps> = ({ history }) => {
     dataClient.getLastValues(current.name ?? "")
       .then(values => dispatch(fetchValuesActions.success(values)))
       .then(() => event.detail.complete)
-      .catch(() => dispatch(fetchValuesActions.failure(new Error(`Error while refreshing`))))
+      .catch(err => dispatch(fetchValuesActions.failure(err)))
   }
 
   const ListValues = () => {
